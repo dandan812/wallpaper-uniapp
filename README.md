@@ -8,7 +8,9 @@
 
 
 
+## 核心页面展示
 
+![uniappv3](课程需要的资料/uidesign.jpeg)
 
 
 
@@ -297,6 +299,16 @@ NBA球员榜：https://tiyu.baidu.com/api/match/playerranking/match/NBA/tabId/60
 ##### 10.4.打包安卓APP并安装运行
 
 ##### 10.5.【完结撒花】项目总结和知识拓展
+
+
+
+## 前后端完整项目
+
+以上是只前端部分代码，如果想做一个前后端独立的壁纸项目，可以学习一下这门课程
+
+💎💎💎 [咸虾米壁纸uniapp全栈微信小程序vue3后台](https://www.bilibili.com/cheese/play/ep1346524)
+
+
 
 ##  学习交流群
 
