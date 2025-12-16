@@ -6,15 +6,23 @@
 
 ![uniappv3](课程需要的资料/wx_code.jpg)
 
+# Gitee 2k Star奖杯
+
+感谢各位小伙伴们对项目的喜欢，获得了Gitee的奖杯，希望学到知识的小伙伴们，右上角点⭐️star支持一下，感谢各位的支持。
+
+![](https://s3.bmp.ovh/imgs/2025/12/16/efece7c42ad7aba1.jpg)
+
+
+
+
+
 
 
 ## 核心页面展示
 
 ![uniappv3](课程需要的资料/uidesign.jpeg)
 
-
-
-
+**📺 配套学习视频教程**：https://www.bilibili.com/video/BV1Yg4y127Fp
 
 ## 课程目录+随堂笔记
 
