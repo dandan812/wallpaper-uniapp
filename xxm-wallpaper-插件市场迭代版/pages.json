@@ -17,6 +17,15 @@
 			}
 		},
 		{
+			"path" : "pages/subject/subject",
+			"style" : 
+			{
+				"navigationBarTitleText" : "专题",
+				"enablePullDownRefresh" : false,
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path" : "pages/user/user",
 			"style" : 
 			{
@@ -88,6 +97,12 @@
 				"iconPath": "static/images/tabBar/classify.png",
 				"selectedIconPath": "static/images/tabBar/classify-h.png"
 			},{
+				"text": "专题",
+				"pagePath": "pages/subject/subject",
+				"iconPath": "static/images/geng.png",
+				"selectedIconPath": "static/images/geng-h.png"
+			},
+			{
 				"text": "我的",
 				"pagePath": "pages/user/user",
 				"iconPath": "static/images/tabBar/user.png",
