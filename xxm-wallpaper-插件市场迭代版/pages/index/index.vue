@@ -184,6 +184,9 @@ const classifyList = ref([]);
 const subjectLoading = ref(false); 
 const subjectList = ref([]);
 
+const pageNum = ref(1); // 当前页码
+const pageSize = ref(5); // 每次加载2条
+
 // 新增：获取专题推荐数据
 const getSubject = async () => {
 	if (subjectLoading.value) return;
@@ -192,7 +195,10 @@ const getSubject = async () => {
 	
 	try {
 		// 调用数据
-		let res =await apiGetSubject();	
+		let res =await apiGetSubject({
+			pageNum: pageNum.value,
+			pageSize: pageSize.value
+		});
 		
 		// 处理响应数据
 		// console.log('专题数据:', res);

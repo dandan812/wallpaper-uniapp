@@ -97,8 +97,12 @@ export const apiGetSubject = (data = {}) => {
 	return uni.request({
 		url: 'https://tea.qingnian8.com/api/bizhi/subjectList',
 		method: 'GET',
+		data: {
+		      pageNum: data.pageNum || 1,     // 页码，默认为1
+		      pageSize: data.pageSize || 6,  // 每页条数，默认为5
+		},
 		header:{
-			"access-key":"lf123321"   //扫码获取的key
+			"access-key":"lf123321"//扫码获取的key
 		}
 	});
 }

@@ -99,19 +99,25 @@ const keyword = ref('');
 
 const allDataList = ref([]); // 存储从API获取的所有数据
 const page = ref(1); // 当前页码
-const pageSize = ref(2); // 定义每次加载的数目
+const pageSize = ref(6); // 定义每次加载的数目
 const totalLoaded = ref(0); // 已加载的总数
 
 // 获取专题数据
-const getSubject = async () => {	
+const getSubject = async (isLoadMore = false) => {	
 	if (loading.value) return;
 	
 	loading.value = true;
 	error.value = false;
-	
+	// 如果是加载更多，页码加1
+	if (isLoadMore) {
+		page.value++;
+	}
 	try {
 		// 调用数据
-		let res =await apiGetSubject();	
+		let res =await apiGetSubject({
+			pageNum: page.value,
+			pageSize: pageSize.value
+		});
 		
 		// 处理响应数据
 		let data = res.data;
@@ -130,8 +136,11 @@ const getSubject = async () => {
 		// 检查数据结构
 		if (data && data.errCode === 0 && data.data && Array.isArray(data.data)) {
 			// 处理并格式化数据
-			allDataList.value = data.data.map(item => {
-				
+			const formattedData = data.data.map(item => {
+				if (!item || typeof item !== 'object') {
+					console.warn(`第${index}项数据无效:`, item);
+					return null;
+				}
 				// 获取最多三张图片的URL
 				let imageUrls = [];
 				if (item.picList && Array.isArray(item.picList)) {
@@ -167,20 +176,17 @@ const getSubject = async () => {
 			// console.log('处理后的专题数据:', allDataList.value);
 			
 			// 如果数据为空，不显示任何内容（保持空数组）
-			if (allDataList.value.length === 0) {
+			if (formattedData.length === 0) {
 				console.log('专题数据为空');
 			}
 			
-			// 首次加载
-			const firstItems = allDataList.value.slice(0, pageSize.value);
-			subjectList.value = firstItems;
-			totalLoaded.value = firstItems.length;
-			
-			// 判断是否还有更多数据
-			if (allDataList.value.length <= pageSize.value) {
-				noMore.value = true;
+			// 更新数据
+			if (isLoadMore) {
+				// 加载更多：追加数据
+				subjectList.value = [...subjectList.value, ...formattedData];
 			} else {
-				noMore.value = false;
+				// 首次加载或重新加载：替换数据
+				subjectList.value = formattedData;
 			}
 			
 			
@@ -188,7 +194,10 @@ const getSubject = async () => {
 			// API返回错误码
 			console.error('API错误:', data?.errMsg);
 			error.value = true;
-			subjectList.value = []; // 确保是空数组
+			// 如果是加载更多失败，回退页码
+			if (isLoadMore) {
+				page.value--;
+			}
 			uni.showToast({
 				title: data?.errMsg || '加载失败',
 				icon: 'none'
@@ -198,7 +207,10 @@ const getSubject = async () => {
 	} catch (err) {
 		console.error('获取专题失败:', err);
 		error.value = true;
-		subjectList.value = []; // 确保是空数组
+		// 如果是加载更多失败，回退页码
+		if (isLoadMore) {
+			page.value--;
+		}
 		uni.showToast({
 			title: '网络错误，请重试',
 			icon: 'none'
@@ -213,43 +225,8 @@ const getSubject = async () => {
 const loadMore = () => {
 	if (loading.value || noMore.value) return;
 	
-	// console.log('点击加载更多，当前已加载:', totalLoaded.value);
-	
-	loading.value = true;
-	
-	try {
-		// 计算应该加载哪些数据
-		const startIndex = totalLoaded.value;
-		const endIndex = startIndex + pageSize.value;
-		const nextItems = allDataList.value.slice(startIndex, endIndex);
-		
-		// console.log('从索引', startIndex, '到', endIndex, '加载数据');
-		// console.log('下一批数据:', nextItems);
-		
-		if (nextItems.length > 0) {
-			// 追加到现有列表后面
-			subjectList.value = [...subjectList.value, ...nextItems];
-			totalLoaded.value += nextItems.length;
-			page.value++;
-			
-			// console.log('加载更多，追加了', nextItems.length, '个专题');
-			// console.log('当前总共显示:', subjectList.value.length, '个专题');
-			
-			// 检查是否还有更多数据
-			if (totalLoaded.value >= allDataList.value.length) {
-				noMore.value = true;
-				console.log('已加载所有数据');
-			}
-		} else {
-			noMore.value = true;
-			console.log('没有更多数据了');
-		}
-		
-	} catch (error) {
-		console.error('加载更多失败:', error);
-	} finally {
-		loading.value = false;
-	}
+	console.log('点击加载更多，当前页码:', page.value);
+	getSubject(true);
 }
 
 // 重新加载
