@@ -175,7 +175,7 @@
 <script setup>
 import { ref } from 'vue';
 import {onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
-import {apiGetBanner,apiGetDayRandom,apiGetNotice,apiGetClassify} from "@/api/apis.js"
+import {apiGetBanner,apiGetDayRandom,apiGetNotice,apiGetClassify,apiGetSubject} from "@/api/apis.js"
 
 const bannerList= ref([]);
 const randomList = ref([]);
@@ -191,14 +191,8 @@ const getSubject = async () => {
 	subjectLoading.value = true;
 	
 	try {
-		// 直接调用API
-		let res = await uni.request({
-			url: 'https://tea.qingnian8.com/api/bizhi/subjectList',
-			method: 'GET',
-			header:{
-				"access-key":"lf123321"   //扫码获取的key
-			}
-		});
+		// 调用数据
+		let res =await apiGetSubject();	
 		
 		// 处理响应数据
 		// console.log('专题数据:', res);

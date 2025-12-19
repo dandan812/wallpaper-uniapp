@@ -88,6 +88,7 @@
 
 import {ref} from "vue";	
 import { onLoad,onShareAppMessage,onShareTimeline } from "@dcloudio/uni-app"
+import {apiGetSubject} from "@/api/apis.js"
 
 const subjectList = ref([]); // 初始化为空数组
 const loading = ref(false);
@@ -109,13 +110,8 @@ const getSubject = async () => {
 	error.value = false;
 	
 	try {
-		let res = await uni.request({
-			url: 'https://tea.qingnian8.com/api/bizhi/subjectList',
-			method: 'GET',
-			header:{
-				"access-key":"lf123321"
-			}
-		});
+		// 调用数据
+		let res =await apiGetSubject();	
 		
 		// 处理响应数据
 		let data = res.data;
