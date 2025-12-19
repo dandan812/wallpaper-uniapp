@@ -119,8 +119,7 @@ const getSubject = async (isLoadMore = false) => {
 			pageSize: pageSize.value
 		});
 		
-		// 处理响应数据
-		let data = res.data;
+		let data = res;
 		
 		// 如果返回的是字符串，尝试解析JSON
 		if (typeof data === 'string') {

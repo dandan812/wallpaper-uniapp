@@ -199,10 +199,11 @@ const getSubject = async () => {
 			pageNum: pageNum.value,
 			pageSize: pageSize.value
 		});
+		console.log(res);
 		
 		// 处理响应数据
-		// console.log('专题数据:', res);
-		let data = res.data;
+		// let data = res.data;
+		let data = res;
 		if (typeof data === 'string') {
 			try {
 				data = JSON.parse(data);

@@ -10,7 +10,7 @@ export function request(config={}){
 	} = config
 	
 	url = BASE_URL+url
-	header['access-key'] = "lf123321"
+	header['access-key'] = "xxxyyyzzz"
 	
 	
 	return new Promise((resolve,reject)=>{		
