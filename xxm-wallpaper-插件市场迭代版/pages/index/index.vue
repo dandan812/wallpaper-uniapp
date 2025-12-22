@@ -37,6 +37,15 @@
 			</view>
 		</view>
 
+		<view class="quick">
+			<view class="box" hover-class="boxHover" @click="routerTo('/pages_quick/ranking')">
+				<image class="pic" src="https://cdn.qingnian8.com/project/bizhi/ranking.png" mode="aspectFill"></image>
+			</view>
+			<view class="box" hover-class="boxHover" @click="routerTo('/pages_quick/news')">
+				<image class="pic" src="https://cdn.qingnian8.com/project/bizhi/upnew.png" mode="aspectFill"></image>
+			</view>
+		</view>
+
 		<view class="select">
 			<common-title>
 				<template #name>每日推荐</template>
@@ -51,8 +60,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x>
-					<view class="box" v-for="item in randomList" :key="item._id" @click="goPreview(item._id)">
-						<image :src="item.smallPicurl" mode="aspectFill"></image>
+					<view class="box" v-for="item in randomList" :key="item._id">
+						<picture-item :item="item" :classList="randomList"></picture-item>
 					</view>
 				</scroll-view>
 			</view>
@@ -105,7 +114,7 @@
 import { ref } from 'vue';
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { apiGetBanner, apiGetDayRandom, apiGetNotice, apiGetClassify, apiGetSubject } from '@/api/apis.js';
-
+import { routerTo } from '@/utils/common.js';
 const bannerList = ref([]);
 const randomList = ref([]);
 const noticeList = ref([]);
@@ -152,14 +161,6 @@ const getSubject = async () => {
 	let res = await apiGetSubject({ pageSize: 5 });
 	subjectList.value = res.data;
 	console.log(res);
-};
-
-//跳转到预览页面
-const goPreview = (id) => {
-	uni.setStorageSync('storgClassList', randomList.value);
-	uni.navigateTo({
-		url: '/pages/preview/preview?id=' + id
-	});
 };
 
 //分享给好友
@@ -251,6 +252,25 @@ getSubject();
 			display: flex;
 			align-items: center;
 			justify-content: center;
+		}
+	}
+
+	.quick {
+		padding: 60rpx 30rpx 10rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.box {
+			width: 330rpx;
+			height: 150rpx;
+			transition: 0.3s;
+			.pic {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		.boxHover {
+			transform: scale(0.96);
 		}
 	}
 

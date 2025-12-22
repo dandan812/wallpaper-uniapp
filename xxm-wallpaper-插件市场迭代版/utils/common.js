@@ -57,12 +57,24 @@ export function routerTo(url, type = 'navigateTo') {
 	}
 }
 
+//点击返回上一页
+export const goBack = () => {
+	uni.navigateBack({
+		success: (res) => {},
+		fail: (err) => {
+			uni.reLaunch({
+				url: '/pages/index/index'
+			});
+		}
+	});
+};
+
 //toast消息提示
-export function showToast({title="",duration=1500,icon="none",mask=false}={}){
+export function showToast({ title = '', duration = 1500, icon = 'none', mask = false } = {}) {
 	uni.showToast({
-		title:String(title),
+		title: String(title),
 		icon,
 		duration,
 		mask
-	})
+	});
 }
