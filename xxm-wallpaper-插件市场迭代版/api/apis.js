@@ -91,3 +91,11 @@ export function apiSearchData(data={}){
 		data
 	})
 }
+
+// 获取专题列表
+export const apiGetSubject = (data = {}) => {
+	return request({
+		url:"/subjectList",
+		data
+	})
+}
