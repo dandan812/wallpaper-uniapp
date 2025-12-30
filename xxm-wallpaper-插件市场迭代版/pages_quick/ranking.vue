@@ -247,11 +247,13 @@ getRank();
 					display: flex;
 					align-items: center;
 					padding: 16rpx 0;
+					gap: 10rpx;
 					.order {
-						width: 90rpx;
+						width: 100rpx;
 						font-size: 25rpx;
 						font-weight: bolder;
 						line-height: 1em;
+						text-align: right;
 						text {
 							font-size: 30rpx;
 						}
