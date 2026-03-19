@@ -4,6 +4,9 @@ require('dotenv').config();
 
 const accessKeyMiddleware = require('./middlewares/accessKey');
 const categoryRoutes = require('./routes/category');
+const bannerRoutes = require('./routes/banner');
+const wallpaperRoutes = require('./routes/wallpaper');
+const noticeRoutes = require('./routes/notice');
 
 const app = express();
 
@@ -13,6 +16,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', accessKeyMiddleware);
 app.use('/api', categoryRoutes);
+app.use('/api', bannerRoutes);
+app.use('/api', wallpaperRoutes);
+app.use('/api', noticeRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: '壁纸 API 服务运行中' });
