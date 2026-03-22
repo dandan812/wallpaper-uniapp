@@ -1,93 +1,93 @@
-import {request} from "@/utils/request.js"
+import { request } from "@/utils/request.js";
 
-export function apiGetBanner(){
+// 轮播图
+export function apiGetBanner() {
 	return request({
-		url:"/homeBanner"		
-	})	
+		url: "/homeBanner"
+	});
 }
 
-export function apiGetDayRandom(){
-	return request({url:"/randomWall"})
+// 随机壁纸
+export function apiGetDayRandom() {
+	return request({ url: "/randomWall" });
 }
 
-export function apiGetNotice(data={}){
+// 公告列表
+export function apiGetNotice(data = {}) {
 	return request({
-		url:"/wallNewsList",
+		url: "/wallNewsList",
 		data
-	})
+	});
 }
 
-
-export function apiGetClassify(data={}){
+// 公告详情
+export function apiNoticeDetail(data = {}) {
 	return request({
-		url:"/classify",
-		data
-	})
+		url: `/wallNewsDetail/${data.id}`
+	});
 }
 
-
-
-export function apiGetClassList(data={}){
+// 分类列表
+export function apiGetClassify(data = {}) {
 	return request({
-		url:"/wallList",
+		url: "/classify",
 		data
-	})
+	});
 }
 
-
-export function apiGetSetupScore(data={}){
+// 壁纸列表
+export function apiGetClassList(data = {}) {
 	return request({
-		url:"/setupScore",
+		url: "/wallList",
 		data
-	})
+	});
 }
 
-
-export function apiWriteDownload(data={}){
+// 壁纸详情
+export function apiDetailWall(data = {}) {
 	return request({
-		url:"/downloadWall",
-		data
-	})
+		url: `/detailWall/${data.id}`
+	});
 }
 
-
-
-export function apiDetailWall(data={}){
+// 搜索壁纸
+export function apiSearchData(data = {}) {
 	return request({
-		url:"/detailWall",
+		url: "/searchWall",
 		data
-	})
+	});
 }
 
-
-export function apiUserInfo(data={}){
+// 评分
+export function apiGetSetupScore(data = {}) {
 	return request({
-		url:"/userInfo",
+		url: "/setupScore",
+		method: "POST",
 		data
-	})
+	});
 }
 
-
-export function apiGetHistoryList(data={}){
+// 下载记录
+export function apiWriteDownload(data = {}) {
 	return request({
-		url:"/userWallList",
+		url: "/downloadWall",
+		method: "POST",
 		data
-	})
+	});
 }
 
-
-
-export function apiNoticeDetail(data={}){
+// 用户信息
+export function apiUserInfo(data = {}) {
 	return request({
-		url:"/wallNewsDetail",
+		url: "/userInfo",
 		data
-	})
+	});
 }
 
-
-export function apiSearchData(data={}){
+// 用户历史列表
+export function apiGetHistoryList(data = {}) {
 	return request({
-		url:"/searchWall",
+		url: "/userWallList",
 		data
-	})
+	});
 }
