@@ -1,0 +1,1050 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Wallpaper API",
+    "description": "OpenAPI definition generated from the current backend routes for Apifox import.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://8.135.46.112/api",
+      "description": "production"
+    },
+    {
+      "url": "http://localhost:3000/api",
+      "description": "local"
+    }
+  ],
+  "security": [
+    {
+      "accessKeyAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "accessKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "access-key",
+        "description": "API access key, for example key123456"
+      }
+    },
+    "schemas": {
+      "ApiResponseBase": {
+        "type": "object",
+        "properties": {
+          "errCode": {
+            "type": "integer",
+            "example": 0
+          },
+          "errMsg": {
+            "type": "string",
+            "example": "success"
+          },
+          "timeCost": {
+            "type": "integer",
+            "example": 0
+          },
+          "total": {
+            "type": "integer",
+            "nullable": true,
+            "example": 3
+          }
+        }
+      },
+      "CategoryItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "cute-pets"
+          },
+          "picurl": {
+            "type": "string",
+            "example": "https://picsum.photos/id/1025/480/854"
+          },
+          "sort": {
+            "type": "integer",
+            "example": 1
+          },
+          "select": {
+            "type": "integer",
+            "example": 1
+          },
+          "wallpaper_count": {
+            "type": "integer",
+            "example": 2
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BannerItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "picurl": {
+            "type": "string",
+            "example": "https://example.com/banner.jpg"
+          },
+          "target": {
+            "type": "string",
+            "example": "miniProgram"
+          },
+          "url": {
+            "type": "string",
+            "example": "/pages/classlist/classlist?id=1&name=cute-pets"
+          },
+          "appid": {
+            "type": "string",
+            "nullable": true,
+            "example": "wx123456"
+          }
+        }
+      },
+      "NoticeItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "welcome-notice"
+          },
+          "content": {
+            "type": "string",
+            "example": "<p>notice content</p>"
+          },
+          "view_count": {
+            "type": "integer",
+            "example": 12
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WallpaperSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "classid": {
+            "type": "integer",
+            "example": 1
+          },
+          "smallPicurl": {
+            "type": "string",
+            "example": "https://picsum.photos/id/1025/480/854"
+          },
+          "score": {
+            "type": "string",
+            "example": "4.8"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "example": "sample-wallpaper"
+          }
+        }
+      },
+      "WallpaperDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WallpaperSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "picurl": {
+                "type": "string",
+                "example": "https://picsum.photos/id/1025/1440/2560"
+              },
+              "description": {
+                "type": "string",
+                "example": "sample wallpaper description"
+              },
+              "tabs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "pet",
+                  "healing",
+                  "cat"
+                ]
+              },
+              "score_count": {
+                "type": "integer",
+                "example": 36
+              },
+              "download_count": {
+                "type": "integer",
+                "example": 128
+              },
+              "view_count": {
+                "type": "integer",
+                "example": 525
+              },
+              "nickname": {
+                "type": "string",
+                "example": "sample-user"
+              },
+              "status": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "UserInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nickname": {
+            "type": "string",
+            "example": "test-user"
+          },
+          "avatar": {
+            "type": "string",
+            "example": ""
+          },
+          "openid": {
+            "type": "string",
+            "example": "test_openid_001"
+          },
+          "IP": {
+            "type": "string",
+            "example": "127.0.0.1"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string",
+                "example": "local"
+              },
+              "province": {
+                "type": "string",
+                "example": "local"
+              },
+              "city": {
+                "type": "string",
+                "example": "local"
+              }
+            }
+          },
+          "scoreSize": {
+            "type": "integer",
+            "example": 0
+          },
+          "downloadSize": {
+            "type": "integer",
+            "example": 0
+          },
+          "score_count": {
+            "type": "integer",
+            "example": 0
+          },
+          "download_count": {
+            "type": "integer",
+            "example": 0
+          }
+        }
+      },
+      "ScoreRequest": {
+        "type": "object",
+        "required": [
+          "userId",
+          "wallpaperId",
+          "score"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "example": 1
+          },
+          "wallpaperId": {
+            "type": "integer",
+            "example": 1
+          },
+          "score": {
+            "type": "number",
+            "example": 4.5
+          }
+        }
+      },
+      "DownloadRequest": {
+        "type": "object",
+        "required": [
+          "userId",
+          "wallpaperId"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "example": 1
+          },
+          "wallpaperId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "ApiResponseCategoryList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CategoryItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseBannerList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/BannerItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseNoticeList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NoticeItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseNoticeDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/NoticeItem"
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseWallpaperList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WallpaperSummary"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseWallpaperDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/WallpaperDetail"
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseUserInfo": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/UserInfo"
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseScore": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "score": {
+                    "type": "number",
+                    "example": 4.5
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseNull": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "nullable": true,
+                "example": null
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/classify": {
+      "get": {
+        "tags": [
+          "category"
+        ],
+        "summary": "Get category list",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 8
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Use true to return featured categories only",
+            "schema": {
+              "type": "string",
+              "example": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/banner": {
+      "get": {
+        "tags": [
+          "banner"
+        ],
+        "summary": "Get banner list",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBannerList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/homeBanner": {
+      "get": {
+        "tags": [
+          "banner"
+        ],
+        "summary": "Get home banners",
+        "description": "Legacy alias of /banner",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBannerList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notice": {
+      "get": {
+        "tags": [
+          "notice"
+        ],
+        "summary": "Get notice list",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notice/{id}": {
+      "get": {
+        "tags": [
+          "notice"
+        ],
+        "summary": "Get notice detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallNewsList": {
+      "get": {
+        "tags": [
+          "notice"
+        ],
+        "summary": "Get notice list legacy alias",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallNewsDetail/{id}": {
+      "get": {
+        "tags": [
+          "notice"
+        ],
+        "summary": "Get notice detail legacy alias",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallList": {
+      "get": {
+        "tags": [
+          "wallpaper"
+        ],
+        "summary": "Get wallpaper list by category",
+        "parameters": [
+          {
+            "name": "classid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/detailWall/{id}": {
+      "get": {
+        "tags": [
+          "wallpaper"
+        ],
+        "summary": "Get wallpaper detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/randomWall": {
+      "get": {
+        "tags": [
+          "wallpaper"
+        ],
+        "summary": "Get random wallpapers",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 9
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/searchWall": {
+      "get": {
+        "tags": [
+          "wallpaper"
+        ],
+        "summary": "Search wallpapers",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userInfo": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user info",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Returns the first user when omitted"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUserInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/setupScore": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Submit wallpaper score",
+        "description": "Backend expects wallpaperId, not wallId.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseScore"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/downloadWall": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create download record",
+        "description": "Backend expects wallpaperId, not wallId.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNull"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userWallList": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user wallpaper history",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "score",
+                "download"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "category"
+    },
+    {
+      "name": "banner"
+    },
+    {
+      "name": "notice"
+    },
+    {
+      "name": "wallpaper"
+    },
+    {
+      "name": "user"
+    }
+  ]
+}
