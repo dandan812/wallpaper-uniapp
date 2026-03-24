@@ -55,6 +55,16 @@ scp -r ${H5_PATH}/* ${SERVER_USER}@${SERVER_IP}:${SERVER_PATH}/
 
 if [ $? -eq 0 ]; then
     echo ""
+    echo "修正服务器目录权限..."
+    ssh ${SERVER_USER}@${SERVER_IP} "chown -R www-data:www-data ${SERVER_PATH} && find ${SERVER_PATH} -type d -exec chmod 755 {} + && find ${SERVER_PATH} -type f -exec chmod 644 {} +"
+
+    if [ $? -ne 0 ]; then
+        echo ""
+        echo "警告: 文件已上传，但权限修正失败，请手动检查服务器权限"
+        exit 1
+    fi
+
+    echo ""
     echo "=========================================="
     echo "部署完成"
     echo "=========================================="
