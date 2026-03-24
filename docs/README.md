@@ -16,6 +16,12 @@
 | 了解项目结构和已知问题 | [项目概览](./reference/项目概览.md) |
 | 查看历史规划与任务 | [后端规划](./planning/后端规划.md) / [任务清单](./planning/任务清单.md) |
 
+当前已和线上状态对齐到 `2026-03-24` 的核心文档：
+
+- [前端H5部署](./deployment/前端H5部署.md)
+- [Apifox接口清单](./reference/Apifox接口清单.md)
+- [Apifox导入.json](./reference/Apifox导入.json)
+
 ## 目录结构
 
 ```text

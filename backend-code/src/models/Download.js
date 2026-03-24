@@ -15,6 +15,10 @@ const Download = sequelize.define('Download', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  classid: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW

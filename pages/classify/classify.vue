@@ -6,7 +6,7 @@
 		
 		<view class="classify">
 			<theme-item v-for="item in classifyList" 
-			:key="item._id"
+			:key="item.id"
 			:item="item"
 			></theme-item>
 		</view>
@@ -23,7 +23,7 @@ const classifyList = ref([]);
 
 const getClassify =async()=>{
 	let res =await apiGetClassify({
-		pageSize:15
+		limit:15
 	});
 	classifyList.value = res.data
 	console.log(res);

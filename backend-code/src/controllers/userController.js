@@ -35,6 +35,15 @@ function parseAddress(address) {
   };
 }
 
+async function resolveUserId(userId) {
+  if (userId) {
+    return userId;
+  }
+
+  const firstUser = await User.findOne({ order: [['id', 'ASC']] });
+  return firstUser ? firstUser.id : null;
+}
+
 exports.getUserInfo = async (req, res) => {
   try {
     const { userId } = req.query;
@@ -68,9 +77,18 @@ exports.getUserInfo = async (req, res) => {
 
 exports.setupScore = async (req, res) => {
   try {
-    const { userId, wallpaperId, score: scoreValue } = req.body;
+    const {
+      userId,
+      wallpaperId,
+      wallId,
+      score,
+      userScore
+    } = req.body;
+    const currentUserId = await resolveUserId(userId);
+    const currentWallpaperId = wallpaperId || wallId;
+    const scoreValue = score ?? userScore;
 
-    if (!userId || !wallpaperId || !scoreValue) {
+    if (!currentUserId || !currentWallpaperId || scoreValue === undefined || scoreValue === null) {
       return error(res, '参数不完整', 400);
     }
 
@@ -78,14 +96,17 @@ exports.setupScore = async (req, res) => {
       return error(res, '评分必须在 0 到 5 之间', 400);
     }
 
-    const wallpaper = await Wallpaper.findByPk(wallpaperId);
+    const wallpaper = await Wallpaper.findByPk(currentWallpaperId);
     if (!wallpaper) {
       return error(res, '壁纸不存在', 404);
     }
 
     const [, created] = await Score.findOrCreate({
-      where: { user_id: userId, wallpaper_id: wallpaperId },
-      defaults: { score: scoreValue }
+      where: { user_id: currentUserId, wallpaper_id: currentWallpaperId },
+      defaults: {
+        classid: wallpaper.classid,
+        score: scoreValue
+      }
     });
 
     if (!created) {
@@ -94,12 +115,12 @@ exports.setupScore = async (req, res) => {
 
     setImmediate(async () => {
       const avgScore = await Score.findOne({
-        where: { wallpaper_id: wallpaperId },
+        where: { wallpaper_id: currentWallpaperId },
         attributes: [[Sequelize.fn('AVG', Sequelize.col('score')), 'avg_score']],
         raw: true
       });
 
-      const scoreCount = await Score.count({ where: { wallpaper_id: wallpaperId } });
+      const scoreCount = await Score.count({ where: { wallpaper_id: currentWallpaperId } });
 
       await wallpaper.update({
         score: parseFloat(avgScore.avg_score).toFixed(1),
@@ -115,20 +136,23 @@ exports.setupScore = async (req, res) => {
 
 exports.downloadWall = async (req, res) => {
   try {
-    const { userId, wallpaperId } = req.body;
+    const { userId, wallpaperId, wallId } = req.body;
+    const currentUserId = await resolveUserId(userId);
+    const currentWallpaperId = wallpaperId || wallId;
 
-    if (!userId || !wallpaperId) {
+    if (!currentUserId || !currentWallpaperId) {
       return error(res, '参数不完整', 400);
     }
 
-    const wallpaper = await Wallpaper.findByPk(wallpaperId);
+    const wallpaper = await Wallpaper.findByPk(currentWallpaperId);
     if (!wallpaper) {
       return error(res, '壁纸不存在', 404);
     }
 
     await Download.create({
-      user_id: userId,
-      wallpaper_id: wallpaperId
+      user_id: currentUserId,
+      wallpaper_id: currentWallpaperId,
+      classid: wallpaper.classid
     });
 
     setImmediate(async () => {
@@ -143,9 +167,19 @@ exports.downloadWall = async (req, res) => {
 
 exports.getUserWallList = async (req, res) => {
   try {
-    const { userId, type, limit = 10, skip = 0 } = req.query;
+    const {
+      userId,
+      type,
+      limit,
+      skip,
+      pageNum = 1,
+      pageSize = 10
+    } = req.query;
+    const currentUserId = await resolveUserId(userId);
+    const currentLimit = parseInt(limit ?? pageSize, 10);
+    const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
 
-    if (!userId || !type) {
+    if (!currentUserId || !type) {
       return error(res, '参数不完整', 400);
     }
 
@@ -153,13 +187,13 @@ exports.getUserWallList = async (req, res) => {
 
     if (type === 'score') {
       const scores = await Score.findAll({
-        where: { user_id: userId },
+        where: { user_id: currentUserId },
         include: [{
           model: Wallpaper,
           attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
         }],
-        limit: parseInt(limit, 10),
-        offset: parseInt(skip, 10),
+        limit: currentLimit,
+        offset: currentSkip,
         order: [['created_at', 'DESC']]
       });
       wallpapers = scores.map(item => ({
@@ -168,13 +202,13 @@ exports.getUserWallList = async (req, res) => {
       }));
     } else if (type === 'download') {
       const downloads = await Download.findAll({
-        where: { user_id: userId },
+        where: { user_id: currentUserId },
         include: [{
           model: Wallpaper,
           attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
         }],
-        limit: parseInt(limit, 10),
-        offset: parseInt(skip, 10),
+        limit: currentLimit,
+        offset: currentSkip,
         order: [['created_at', 'DESC']]
       });
       wallpapers = downloads.map(item => toLegacyWallpaper(item.Wallpaper));

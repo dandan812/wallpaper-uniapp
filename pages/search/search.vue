@@ -45,8 +45,8 @@
 		
 		<view v-else>
 			<view class="list">
-				<navigator :url="`/pages/preview/preview?id=${item._id}`"  class="item" 
-				v-for="item in classList" :key="item._id">				
+				<navigator :url="`/pages/preview/preview?id=${item.id}`"  class="item" 
+				v-for="item in classList" :key="item.id">				
 					<image :src="item.smallPicurl" mode="aspectFill"></image>				
 				</navigator>
 			</view>		
@@ -65,8 +65,8 @@ import {onLoad,onUnload,onReachBottom} from "@dcloudio/uni-app";
 import {apiSearchData} from "@/api/apis.js"
 //查询参数
 const queryParams = ref({	
-	pageNum:1,
-	pageSize:12,
+	limit:12,
+	skip:0,
 	keyword:""
 })
 
@@ -130,7 +130,7 @@ const searchData = async ()=>{
 		let res =  await apiSearchData(queryParams.value);
 		classList.value  =  [...classList.value,...res.data] ;
 		uni.setStorageSync("storgClassList",classList.value);	
-		if(queryParams.value.pageSize > res.data.length) noData.value = true;
+		if(queryParams.value.limit > res.data.length) noData.value = true;
 		if(res.data.length == 0 && classList.value.length==0) noSearch.value = true;
 		console.log(res);
 	}finally{
@@ -144,8 +144,8 @@ const initParams = (value='')=>{
 	noData.value = false;
 	noSearch.value = false;
 	queryParams.value = {
-		pageNum:1,
-		pageSize:12,
+		limit:12,
+		skip:0,
 		keyword:value || ""
 	}
 }
@@ -154,7 +154,7 @@ const initParams = (value='')=>{
 //触底加载更多
 onReachBottom(()=>{
 	if(noData.value) return;
-	queryParams.value.pageNum++
+	queryParams.value.skip += queryParams.value.limit
 	searchData();
 })
 

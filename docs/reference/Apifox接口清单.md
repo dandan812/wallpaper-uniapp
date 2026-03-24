@@ -1,19 +1,19 @@
 # Apifox接口清单
 
-这份文档按当前后端实际代码整理，适合作为 Apifox 手动录入或二次整理的基础稿。
+这份文档以当前项目的实际后端实现为准，适合作为 Apifox 手动录入说明和接口核对清单。
 
-如果你希望直接导入 Apifox，可以优先使用：
+如果你想直接导入 Apifox，优先使用：
 
 - [Apifox导入.json](C:/Users/hulian/Desktop/huliang/bizi/univue3/docs/reference/Apifox导入.json)
 
-适用后端入口：
+当前可用环境：
 
 - 线上：`http://8.135.46.112/api`
 - 本地：`http://localhost:3000/api`
 
-## 1. Apifox 建议环境变量
+## 1. Apifox 环境变量建议
 
-建议先在 Apifox 里配置两个环境变量：
+建议先在 Apifox 中配置：
 
 ```text
 baseUrl = http://8.135.46.112/api
@@ -29,12 +29,12 @@ Content-Type: application/json
 
 说明：
 
-- 所有 `/api/*` 路由都需要 `access-key`
-- `access-key` 也支持通过查询参数 `accessKey` 传递，但建议统一走请求头
+- 所有 `/api/*` 接口都需要 `access-key`
+- 当前后端也兼容通过查询参数 `accessKey` 传递，但不建议继续使用
 
 ## 2. 公共返回结构
 
-成功返回：
+成功示例：
 
 ```json
 {
@@ -46,7 +46,7 @@ Content-Type: application/json
 }
 ```
 
-失败返回：
+失败示例：
 
 ```json
 {
@@ -60,11 +60,11 @@ Content-Type: application/json
 常见错误码：
 
 - `0`：成功
-- `400`：参数错误/业务错误
+- `400`：参数错误或业务校验失败
 - `401`：`access-key` 无效
 - `404`：资源不存在
 
-## 3. 分类分类
+## 3. 分类
 
 ### 3.1 获取分类列表
 
@@ -75,11 +75,19 @@ Content-Type: application/json
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `pageNum` | number | 否 | 页码，默认 `1` |
-| `pageSize` | number | 否 | 每页数量，默认 `8` |
+| `limit` | number | 否 | 推荐使用，默认 `8` |
+| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `pageNum` | number | 否 | 旧参数，默认 `1` |
+| `pageSize` | number | 否 | 旧参数，默认 `8` |
 | `select` | string | 否 | 传 `true` 时仅返回精选分类 |
 
-返回 `data` 字段示例：
+说明：
+
+- 当前后端已经支持 `limit + skip`
+- 旧分页参数 `pageNum + pageSize` 仍兼容
+- 返回中同时保留 `id` 和 `_id`
+
+返回 `data` 示例：
 
 ```json
 [
@@ -109,16 +117,20 @@ Content-Type: application/json
 
 - 方法：`GET`
 - 路径：`/homeBanner`
-- 说明：兼容前端历史命名，返回内容与 `/banner` 一致
 
-返回 `data` 字段示例：
+说明：
+
+- `/homeBanner` 是前端历史兼容别名
+- 当前返回内容与 `/banner` 一致
+
+返回 `data` 示例：
 
 ```json
 [
   {
     "id": 1,
     "_id": 1,
-    "picurl": "https://example.com/banner.jpg",
+    "picurl": "https://picsum.photos/id/1015/960/540",
     "target": "miniProgram",
     "url": "/pages/classlist/classlist?id=1&name=可爱萌宠",
     "appid": "wx123456"
@@ -151,32 +163,38 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `id` | number | 是 | 公告 ID |
 
-### 5.3 获取公告列表（前端兼容）
+### 5.3 获取公告列表（兼容旧前端）
 
 - 方法：`GET`
 - 路径：`/wallNewsList`
-- 说明：兼容旧前端接口名，返回与 `/notice` 一致
 
-### 5.4 获取公告详情（前端兼容）
+说明：
+
+- 这是旧前端接口别名
+- 当前返回内容与 `/notice` 一致
+
+### 5.4 获取公告详情（兼容旧前端）
 
 - 方法：`GET`
 - 路径：`/wallNewsDetail/:id`
-- 说明：兼容旧前端接口名，返回与 `/notice/:id` 一致
 
-返回 `data` 字段示例：
+说明：
+
+- 这是旧前端接口别名
+- 当前返回内容与 `/notice/:id` 一致
+
+返回 `data` 示例：
 
 ```json
-[
-  {
-    "id": 1,
-    "_id": 1,
-    "title": "欢迎使用壁纸小程序",
-    "content": "<p>公告内容</p>",
-    "view_count": 12,
-    "created_at": "2026-03-18T11:47:38.000Z",
-    "updated_at": "2026-03-18T11:47:38.000Z"
-  }
-]
+{
+  "id": 1,
+  "_id": 1,
+  "title": "欢迎使用壁纸小程序",
+  "content": "<p>公告内容</p>",
+  "view_count": 12,
+  "created_at": "2026-03-18T11:47:38.000Z",
+  "updated_at": "2026-03-18T11:47:38.000Z"
+}
 ```
 
 ## 6. 壁纸
@@ -191,10 +209,17 @@ Content-Type: application/json
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `classid` | number | 是 | 分类 ID |
-| `limit` | number | 否 | 默认 `10` |
-| `skip` | number | 否 | 默认 `0` |
+| `limit` | number | 否 | 推荐使用，默认 `10` |
+| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `pageNum` | number | 否 | 旧参数，默认 `1` |
+| `pageSize` | number | 否 | 旧参数，默认 `10` |
 
-返回 `data` 字段示例：
+说明：
+
+- 当前建议统一使用 `limit + skip`
+- 旧分页参数仍兼容
+
+返回 `data` 示例：
 
 ```json
 [
@@ -219,7 +244,7 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `id` | number | 是 | 壁纸 ID |
 
-返回 `data` 字段示例：
+返回 `data` 示例：
 
 ```json
 {
@@ -230,7 +255,7 @@ Content-Type: application/json
   "picurl": "https://picsum.photos/id/1025/1440/2560",
   "score": "4.8",
   "title": "奶油小猫午后",
-  "description": "一只蜷在阳光里的奶油小猫，适合作为治愈系手机壁纸。",
+  "description": "一张适合作为手机壁纸的演示图片。",
   "tabs": ["萌宠", "治愈", "猫咪"],
   "score_count": 36,
   "download_count": 128,
@@ -242,7 +267,7 @@ Content-Type: application/json
 }
 ```
 
-### 6.3 获取每日随机推荐
+### 6.3 获取每日推荐
 
 - 方法：`GET`
 - 路径：`/randomWall`
@@ -263,10 +288,17 @@ Content-Type: application/json
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `keyword` | string | 是 | 搜索关键词 |
-| `limit` | number | 否 | 默认 `10` |
-| `skip` | number | 否 | 默认 `0` |
+| `limit` | number | 否 | 推荐使用，默认 `10` |
+| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `pageNum` | number | 否 | 旧参数，默认 `1` |
+| `pageSize` | number | 否 | 旧参数，默认 `10` |
 
-返回 `data` 字段示例：
+说明：
+
+- 当前建议统一使用 `limit + skip`
+- 旧分页参数仍兼容
+
+返回 `data` 示例：
 
 ```json
 [
@@ -292,9 +324,14 @@ Content-Type: application/json
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `userId` | number | 否 | 不传时返回首个用户 |
+| `userId` | number | 否 | 不传时回退到首个用户 |
 
-返回 `data` 字段示例：
+说明：
+
+- 当前前端未接入真实登录态
+- 所以未传 `userId` 时，后端会回退到首个用户并返回默认统计信息
+
+返回 `data` 示例：
 
 ```json
 {
@@ -320,7 +357,7 @@ Content-Type: application/json
 - 方法：`POST`
 - 路径：`/setupScore`
 
-请求体：
+推荐请求体：
 
 ```json
 {
@@ -330,12 +367,13 @@ Content-Type: application/json
 }
 ```
 
-说明：
+兼容说明：
 
-- 当前后端字段名是 `wallpaperId`
-- 若前端继续传 `wallId`，需要前端或后端再做一层兼容
+- 当前标准字段是 `wallpaperId`
+- 当前标准评分字段是 `score`
+- 旧字段 `wallId` 和 `userScore` 仍兼容
 
-成功返回：
+成功示例：
 
 ```json
 {
@@ -353,7 +391,7 @@ Content-Type: application/json
 - 方法：`POST`
 - 路径：`/downloadWall`
 
-请求体：
+推荐请求体：
 
 ```json
 {
@@ -362,10 +400,10 @@ Content-Type: application/json
 }
 ```
 
-说明：
+兼容说明：
 
-- 当前后端字段名是 `wallpaperId`
-- 若前端继续传 `wallId`，需要前端或后端再做一层兼容
+- 当前标准字段是 `wallpaperId`
+- 旧字段 `wallId` 仍兼容
 
 ### 7.4 获取用户历史壁纸
 
@@ -376,12 +414,20 @@ Content-Type: application/json
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `userId` | number | 是 | 用户 ID |
 | `type` | string | 是 | `score` 或 `download` |
-| `limit` | number | 否 | 默认 `10` |
-| `skip` | number | 否 | 默认 `0` |
+| `userId` | number | 否 | 不传时回退到首个用户 |
+| `limit` | number | 否 | 推荐使用，默认 `10` |
+| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `pageNum` | number | 否 | 旧参数，默认 `1` |
+| `pageSize` | number | 否 | 旧参数，默认 `10` |
 
-返回 `data` 字段示例：
+说明：
+
+- 当前建议统一使用 `limit + skip`
+- 未传 `userId` 时也会回退到首个用户
+- 旧分页参数仍兼容
+
+返回 `data` 示例：
 
 ```json
 [
@@ -397,9 +443,26 @@ Content-Type: application/json
 ]
 ```
 
-## 8. Apifox 录入建议
+## 8. 当前统一规则
 
-推荐在 Apifox 中按以下分组创建接口：
+现在建议前后端统一按这套字段使用：
+
+- 壁纸主键参数：`wallpaperId`
+- 评分字段：`score`
+- 分页参数：`limit`、`skip`
+- 实体主键读取：优先 `id`
+
+当前后端仍保留兼容：
+
+- `wallId`
+- `userScore`
+- `pageNum`
+- `pageSize`
+- `_id`
+
+## 9. Apifox 录入建议
+
+建议在 Apifox 里按以下分组创建接口：
 
 - 分类
 - 轮播图
@@ -407,15 +470,18 @@ Content-Type: application/json
 - 壁纸
 - 用户
 
-建议的公共设置：
+建议公共设置：
 
 - 全局环境变量：`baseUrl`、`accessKey`
 - 全局请求头：`access-key: {{accessKey}}`
 - 默认前缀：`{{baseUrl}}`
 
-## 9. 当前需要注意的兼容点
+## 10. 当前线上状态备注
 
-- 当前返回体里同时保留了 `id` 和 `_id`，用于兼容旧前端
-- `/homeBanner`、`/wallNewsList`、`/wallNewsDetail/:id` 都是兼容旧前端的历史接口名
-- `setupScore` 和 `downloadWall` 当前文档以实际后端代码为准，使用 `wallpaperId`
-- 如果后续你要导出 OpenAPI/Swagger，建议先统一旧字段和历史别名，再做一次规范化
+截至 `2026-03-24`，这份文档已经和当前线上后端一致，包括：
+
+- `/homeBanner`、`/wallNewsList`、`/wallNewsDetail/:id` 已兼容
+- `userInfo` 未传 `userId` 不再报错
+- `setupScore`、`downloadWall` 已兼容旧参数
+- 返回里仍保留 `id` 和 `_id`
+- 前端 H5 已重新发行并部署到 `http://8.135.46.112`

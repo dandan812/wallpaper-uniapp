@@ -9,7 +9,7 @@
 		<view class="banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" 
 			indicator-active-color="#fff" autoplay>
-				<swiper-item v-for="item in bannerList" :key="item._id">
+				<swiper-item v-for="item in bannerList" :key="item.id">
 					
 					<navigator v-if="item.target == 'miniProgram'" 
 					:url="item.url" 
@@ -34,8 +34,8 @@
 			</view>
 			<view class="center">
 				<swiper vertical autoplay interval="1500" duration="300" circular>
-					<swiper-item v-for="item in noticeList" :key="item._id">
-						<navigator :url="'/pages/notice/detail?id='+item._id">
+					<swiper-item v-for="item in noticeList" :key="item.id">
+						<navigator :url="'/pages/notice/detail?id='+item.id">
 							{{item.title}}
 						</navigator>
 					</swiper-item>
@@ -60,8 +60,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x>
-					<view class="box" v-for="item in randomList" :key="item._id" 
-					@click="goPreview(item._id)">					
+					<view class="box" v-for="item in randomList" :key="item.id" 
+					@click="goPreview(item.id)">					
 						<image :src="item.smallPicurl" mode="aspectFill"></image>					
 					</view>
 				</scroll-view>
@@ -78,7 +78,7 @@
 			
 			<view class="content">
 				<theme-item v-for="item in classifyList" 
-				:key="item._id"
+				:key="item.id"
 				:item="item"
 				></theme-item>
 				<theme-item :isMore="true"></theme-item>

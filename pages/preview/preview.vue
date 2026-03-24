@@ -1,7 +1,7 @@
 <template>
 	<view class="preview" v-if="currentInfo">
 		<swiper circular :current="currentIndex" @change="swiperChange">
-			<swiper-item v-for="(item,index) in classList" :key="item._id">
+			<swiper-item v-for="(item,index) in classList" :key="item.id">
 				<image v-if="readImgs.includes(index)" @click="maskChange" :src="item.picurl" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
@@ -53,7 +53,7 @@
 					<view class="content">
 						<view class="row">
 							<view class="label">壁纸ID：</view>
-							<text selectable class="value">{{currentInfo._id}}</text>
+							<text selectable class="value">{{currentInfo.id}}</text>
 						</view>
 						<!-- 
 						<view class="row">
@@ -175,7 +175,7 @@
 				}
 			})
 		}
-		currentIndex.value = classList.value.findIndex(item => item._id == currentId.value)
+		currentIndex.value = classList.value.findIndex(item => item.id == currentId.value)
 		currentInfo.value = classList.value[currentIndex.value]
 		readImgsFun();
 	})
@@ -222,14 +222,10 @@
 		uni.showLoading({
 			title: "加载中..."
 		})
-		let {
-			classid,
-			_id: wallId
-		} = currentInfo.value;
+		let { id: wallpaperId } = currentInfo.value;
 		let res = await apiGetSetupScore({
-			classid,
-			wallId,
-			userScore: userScore.value
+			wallpaperId,
+			score: userScore.value
 		})
 		uni.hideLoading();
 		if (res.errCode === 0) {
@@ -282,13 +278,9 @@
 				title: "下载中...",
 				mask: true
 			})
-			let {
-				classid,
-				_id: wallId
-			} = currentInfo.value;
+			let { id: wallpaperId } = currentInfo.value;
 			let res = await apiWriteDownload({
-				classid,
-				wallId
+				wallpaperId
 			})
 			if (res.errCode != 0) throw res;
 			uni.getImageInfo({

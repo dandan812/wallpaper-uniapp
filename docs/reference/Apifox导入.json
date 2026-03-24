@@ -1,18 +1,18 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Wallpaper API",
-    "description": "OpenAPI definition generated from the current backend routes for Apifox import.",
-    "version": "1.0.0"
+    "title": "咸虾米壁纸 API",
+    "description": "根据当前后端实际实现整理，可直接导入 Apifox。已对齐 2026-03-24 的线上状态。",
+    "version": "1.1.0"
   },
   "servers": [
     {
       "url": "http://8.135.46.112/api",
-      "description": "production"
+      "description": "线上环境"
     },
     {
       "url": "http://localhost:3000/api",
-      "description": "local"
+      "description": "本地环境"
     }
   ],
   "security": [
@@ -26,7 +26,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "access-key",
-        "description": "API access key, for example key123456"
+        "description": "接口访问密钥，例如 key123456"
       }
     },
     "schemas": {
@@ -39,7 +39,7 @@
           },
           "errMsg": {
             "type": "string",
-            "example": "success"
+            "example": "查询成功"
           },
           "timeCost": {
             "type": "integer",
@@ -65,7 +65,7 @@
           },
           "name": {
             "type": "string",
-            "example": "cute-pets"
+            "example": "可爱萌宠"
           },
           "picurl": {
             "type": "string",
@@ -110,7 +110,7 @@
           },
           "picurl": {
             "type": "string",
-            "example": "https://example.com/banner.jpg"
+            "example": "https://picsum.photos/id/1015/960/540"
           },
           "target": {
             "type": "string",
@@ -118,7 +118,7 @@
           },
           "url": {
             "type": "string",
-            "example": "/pages/classlist/classlist?id=1&name=cute-pets"
+            "example": "/pages/classlist/classlist?id=1&name=可爱萌宠"
           },
           "appid": {
             "type": "string",
@@ -140,11 +140,11 @@
           },
           "title": {
             "type": "string",
-            "example": "welcome-notice"
+            "example": "欢迎使用壁纸小程序"
           },
           "content": {
             "type": "string",
-            "example": "<p>notice content</p>"
+            "example": "<p>公告内容</p>"
           },
           "view_count": {
             "type": "integer",
@@ -186,7 +186,7 @@
           "title": {
             "type": "string",
             "nullable": true,
-            "example": "sample-wallpaper"
+            "example": "奶油小猫午后"
           }
         }
       },
@@ -204,7 +204,7 @@
               },
               "description": {
                 "type": "string",
-                "example": "sample wallpaper description"
+                "example": "一张适合作为手机壁纸的演示图片。"
               },
               "tabs": {
                 "type": "array",
@@ -212,9 +212,9 @@
                   "type": "string"
                 },
                 "example": [
-                  "pet",
-                  "healing",
-                  "cat"
+                  "萌宠",
+                  "治愈",
+                  "猫咪"
                 ]
               },
               "score_count": {
@@ -231,7 +231,7 @@
               },
               "nickname": {
                 "type": "string",
-                "example": "sample-user"
+                "example": "咸虾米"
               },
               "status": {
                 "type": "integer",
@@ -258,7 +258,7 @@
           },
           "nickname": {
             "type": "string",
-            "example": "test-user"
+            "example": "测试用户"
           },
           "avatar": {
             "type": "string",
@@ -277,15 +277,15 @@
             "properties": {
               "country": {
                 "type": "string",
-                "example": "local"
+                "example": "本地测试"
               },
               "province": {
                 "type": "string",
-                "example": "local"
+                "example": "本地测试"
               },
               "city": {
                 "type": "string",
-                "example": "local"
+                "example": "本地测试"
               }
             }
           },
@@ -506,13 +506,32 @@
     "/classify": {
       "get": {
         "tags": [
-          "category"
+          "分类"
         ],
-        "summary": "Get category list",
+        "summary": "获取分类列表",
         "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 8",
+            "schema": {
+              "type": "integer",
+              "default": 8
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
           {
             "name": "pageNum",
             "in": "query",
+            "description": "旧分页参数，默认 1",
             "schema": {
               "type": "integer",
               "default": 1
@@ -521,6 +540,7 @@
           {
             "name": "pageSize",
             "in": "query",
+            "description": "旧分页参数，默认 8",
             "schema": {
               "type": "integer",
               "default": 8
@@ -529,7 +549,7 @@
           {
             "name": "select",
             "in": "query",
-            "description": "Use true to return featured categories only",
+            "description": "传 true 时仅返回精选分类",
             "schema": {
               "type": "string",
               "example": "true"
@@ -538,7 +558,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -553,12 +573,12 @@
     "/banner": {
       "get": {
         "tags": [
-          "banner"
+          "轮播图"
         ],
-        "summary": "Get banner list",
+        "summary": "获取轮播图列表",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -573,13 +593,13 @@
     "/homeBanner": {
       "get": {
         "tags": [
-          "banner"
+          "轮播图"
         ],
-        "summary": "Get home banners",
-        "description": "Legacy alias of /banner",
+        "summary": "获取首页轮播图",
+        "description": "旧前端兼容别名，返回结果与 /banner 一致。",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -594,9 +614,9 @@
     "/notice": {
       "get": {
         "tags": [
-          "notice"
+          "公告"
         ],
-        "summary": "Get notice list",
+        "summary": "获取公告列表",
         "parameters": [
           {
             "name": "limit",
@@ -617,7 +637,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -632,9 +652,9 @@
     "/notice/{id}": {
       "get": {
         "tags": [
-          "notice"
+          "公告"
         ],
-        "summary": "Get notice detail",
+        "summary": "获取公告详情",
         "parameters": [
           {
             "name": "id",
@@ -647,7 +667,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -662,9 +682,10 @@
     "/wallNewsList": {
       "get": {
         "tags": [
-          "notice"
+          "公告"
         ],
-        "summary": "Get notice list legacy alias",
+        "summary": "获取公告列表（旧接口）",
+        "description": "兼容旧前端命名，返回结果与 /notice 一致。",
         "parameters": [
           {
             "name": "limit",
@@ -685,7 +706,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -700,9 +721,10 @@
     "/wallNewsDetail/{id}": {
       "get": {
         "tags": [
-          "notice"
+          "公告"
         ],
-        "summary": "Get notice detail legacy alias",
+        "summary": "获取公告详情（旧接口）",
+        "description": "兼容旧前端命名，返回结果与 /notice/{id} 一致。",
         "parameters": [
           {
             "name": "id",
@@ -715,7 +737,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -730,9 +752,9 @@
     "/wallList": {
       "get": {
         "tags": [
-          "wallpaper"
+          "壁纸"
         ],
-        "summary": "Get wallpaper list by category",
+        "summary": "获取分类壁纸列表",
         "parameters": [
           {
             "name": "classid",
@@ -745,6 +767,7 @@
           {
             "name": "limit",
             "in": "query",
+            "description": "推荐使用，默认 10",
             "schema": {
               "type": "integer",
               "default": 10
@@ -753,15 +776,34 @@
           {
             "name": "skip",
             "in": "query",
+            "description": "推荐使用，默认 0",
             "schema": {
               "type": "integer",
               "default": 0
+            }
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "旧分页参数，默认 1",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "旧分页参数，默认 10",
+            "schema": {
+              "type": "integer",
+              "default": 10
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -776,9 +818,9 @@
     "/detailWall/{id}": {
       "get": {
         "tags": [
-          "wallpaper"
+          "壁纸"
         ],
-        "summary": "Get wallpaper detail",
+        "summary": "获取壁纸详情",
         "parameters": [
           {
             "name": "id",
@@ -791,7 +833,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -806,9 +848,9 @@
     "/randomWall": {
       "get": {
         "tags": [
-          "wallpaper"
+          "壁纸"
         ],
-        "summary": "Get random wallpapers",
+        "summary": "获取每日推荐",
         "parameters": [
           {
             "name": "limit",
@@ -821,7 +863,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -836,9 +878,9 @@
     "/searchWall": {
       "get": {
         "tags": [
-          "wallpaper"
+          "壁纸"
         ],
-        "summary": "Search wallpapers",
+        "summary": "搜索壁纸",
         "parameters": [
           {
             "name": "keyword",
@@ -851,6 +893,7 @@
           {
             "name": "limit",
             "in": "query",
+            "description": "推荐使用，默认 10",
             "schema": {
               "type": "integer",
               "default": 10
@@ -859,15 +902,34 @@
           {
             "name": "skip",
             "in": "query",
+            "description": "推荐使用，默认 0",
             "schema": {
               "type": "integer",
               "default": 0
+            }
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "旧分页参数，默认 1",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "旧分页参数，默认 10",
+            "schema": {
+              "type": "integer",
+              "default": 10
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -882,22 +944,22 @@
     "/userInfo": {
       "get": {
         "tags": [
-          "user"
+          "用户"
         ],
-        "summary": "Get user info",
+        "summary": "获取用户信息",
         "parameters": [
           {
             "name": "userId",
             "in": "query",
+            "description": "不传时回退到首个用户",
             "schema": {
               "type": "integer"
-            },
-            "description": "Returns the first user when omitted"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -912,10 +974,10 @@
     "/setupScore": {
       "post": {
         "tags": [
-          "user"
+          "用户"
         ],
-        "summary": "Submit wallpaper score",
-        "description": "Backend expects wallpaperId, not wallId.",
+        "summary": "提交壁纸评分",
+        "description": "当前标准参数为 wallpaperId 和 score。后端仍兼容旧参数 wallId 和 userScore。",
         "requestBody": {
           "required": true,
           "content": {
@@ -928,7 +990,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -943,10 +1005,10 @@
     "/downloadWall": {
       "post": {
         "tags": [
-          "user"
+          "用户"
         ],
-        "summary": "Create download record",
-        "description": "Backend expects wallpaperId, not wallId.",
+        "summary": "记录下载",
+        "description": "当前标准参数为 wallpaperId。后端仍兼容旧参数 wallId。",
         "requestBody": {
           "required": true,
           "content": {
@@ -959,7 +1021,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -974,18 +1036,10 @@
     "/userWallList": {
       "get": {
         "tags": [
-          "user"
+          "用户"
         ],
-        "summary": "Get user wallpaper history",
+        "summary": "获取用户历史壁纸",
         "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
           {
             "name": "type",
             "in": "query",
@@ -999,8 +1053,17 @@
             }
           },
           {
+            "name": "userId",
+            "in": "query",
+            "description": "不传时回退到首个用户",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
             "name": "limit",
             "in": "query",
+            "description": "推荐使用，默认 10",
             "schema": {
               "type": "integer",
               "default": 10
@@ -1009,15 +1072,34 @@
           {
             "name": "skip",
             "in": "query",
+            "description": "推荐使用，默认 0",
             "schema": {
               "type": "integer",
               "default": 0
+            }
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "旧分页参数，默认 1",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "旧分页参数，默认 10",
+            "schema": {
+              "type": "integer",
+              "default": 10
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -1032,19 +1114,19 @@
   },
   "tags": [
     {
-      "name": "category"
+      "name": "分类"
     },
     {
-      "name": "banner"
+      "name": "轮播图"
     },
     {
-      "name": "notice"
+      "name": "公告"
     },
     {
-      "name": "wallpaper"
+      "name": "壁纸"
     },
     {
-      "name": "user"
+      "name": "用户"
     }
   ]
 }

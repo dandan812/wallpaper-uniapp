@@ -14,13 +14,21 @@ function toLegacyWallpaper(record) {
 
 exports.getWallpapers = async (req, res) => {
   try {
-    const { classid, limit = 10, skip = 0 } = req.query;
+    const {
+      classid,
+      limit,
+      skip,
+      pageNum = 1,
+      pageSize = 10
+    } = req.query;
+    const currentLimit = parseInt(limit ?? pageSize, 10);
+    const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
 
     if (!classid) {
       return error(res, '缺少分类ID', 400);
     }
 
-    const cacheKey = `wallpapers:${classid}:${limit}:${skip}`;
+    const cacheKey = `wallpapers:${classid}:${currentLimit}:${currentSkip}`;
     const cached = await redis.get(cacheKey);
 
     if (cached) {
@@ -29,8 +37,8 @@ exports.getWallpapers = async (req, res) => {
 
     const wallpapers = await Wallpaper.findAll({
       where: { classid },
-      limit: parseInt(limit, 10),
-      offset: parseInt(skip, 10),
+      limit: currentLimit,
+      offset: currentSkip,
       order: [['id', 'DESC']],
       attributes: ['id', 'classid', 'smallPicurl', 'score']
     });
@@ -99,13 +107,21 @@ exports.getRandomWallpapers = async (req, res) => {
 
 exports.searchWallpapers = async (req, res) => {
   try {
-    const { keyword, limit = 10, skip = 0 } = req.query;
+    const {
+      keyword,
+      limit,
+      skip,
+      pageNum = 1,
+      pageSize = 10
+    } = req.query;
+    const currentLimit = parseInt(limit ?? pageSize, 10);
+    const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
 
     if (!keyword) {
       return error(res, '缺少搜索关键词', 400);
     }
 
-    const cacheKey = `search:${keyword}:${limit}:${skip}`;
+    const cacheKey = `search:${keyword}:${currentLimit}:${currentSkip}`;
     const cached = await redis.get(cacheKey);
 
     if (cached) {
@@ -120,8 +136,8 @@ exports.searchWallpapers = async (req, res) => {
           { tabs: { [Sequelize.Op.like]: `%${keyword}%` } }
         ]
       },
-      limit: parseInt(limit, 10),
-      offset: parseInt(skip, 10),
+      limit: currentLimit,
+      offset: currentSkip,
       order: [['id', 'DESC']],
       attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
     });

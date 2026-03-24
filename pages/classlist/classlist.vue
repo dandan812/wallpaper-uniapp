@@ -6,9 +6,9 @@
 		</view>
 		
 		<view class="content">
-			<navigator :url="'/pages/preview/preview?id='+item._id" class="item" 
+			<navigator :url="'/pages/preview/preview?id='+item.id" class="item" 
 			v-for="item in classList"
-			:key="item._id"
+			:key="item.id"
 			>			
 				<image :src="item.smallPicurl" mode="aspectFill"></image>
 			</navigator>
@@ -34,8 +34,8 @@ const noData = ref(false)
 
 //定义data参数
 const queryParams = {
-	pageNum:1,
-	pageSize:12
+	limit:12,
+	skip:0
 }
 let pageName;
 
@@ -55,7 +55,7 @@ onLoad((e)=>{
 
 onReachBottom(()=>{
 	if(noData.value) return;
-	queryParams.pageNum++;
+	queryParams.skip += queryParams.limit;
 	getClassList();
 })
 
@@ -66,7 +66,7 @@ const getClassList = async ()=>{
 	if(queryParams.type) res = await apiGetHistoryList(queryParams);
 	
 	classList.value = [...classList.value , ...res.data];
-	if(queryParams.pageSize > res.data.length) noData.value = true; 
+	if(queryParams.limit > res.data.length) noData.value = true; 
 	uni.setStorageSync("storgClassList",classList.value);	
 	console.log(classList.value);	
 }

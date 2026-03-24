@@ -15,6 +15,10 @@ const Score = sequelize.define('Score', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  classid: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
   score: {
     type: DataTypes.DECIMAL(2, 1),
     allowNull: false

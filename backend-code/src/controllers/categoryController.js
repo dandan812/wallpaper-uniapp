@@ -14,8 +14,16 @@ function toLegacyCategory(record) {
 
 exports.getClassify = async (req, res) => {
   try {
-    const { pageNum = 1, pageSize = 8, select } = req.query;
-    const cacheKey = `classify:${select}:${pageNum}:${pageSize}`;
+    const {
+      pageNum = 1,
+      pageSize = 8,
+      limit,
+      skip,
+      select
+    } = req.query;
+    const currentLimit = parseInt(limit ?? pageSize, 10);
+    const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
+    const cacheKey = `classify:${select}:${currentLimit}:${currentSkip}`;
 
     const cached = await redis.get(cacheKey);
     if (cached) {
@@ -28,8 +36,8 @@ exports.getClassify = async (req, res) => {
     const { count, rows } = await Category.findAndCountAll({
       where,
       order: [['sort', 'ASC']],
-      limit: select === 'true' ? undefined : parseInt(pageSize, 10),
-      offset: select === 'true' ? undefined : (parseInt(pageNum, 10) - 1) * parseInt(pageSize, 10)
+      limit: select === 'true' ? undefined : currentLimit,
+      offset: select === 'true' ? undefined : currentSkip
     });
 
     const payload = rows.map(toLegacyCategory);
