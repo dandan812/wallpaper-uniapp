@@ -13,7 +13,8 @@ const Wallpaper = sequelize.define('Wallpaper', {
   },
   smallPicurl: {
     type: DataTypes.STRING(500),
-    allowNull: false
+    allowNull: false,
+    field: 'small_picurl'
   },
   picurl: {
     type: DataTypes.STRING(500),
@@ -22,9 +23,34 @@ const Wallpaper = sequelize.define('Wallpaper', {
   score: {
     type: DataTypes.FLOAT,
     defaultValue: 0
+  },
+  title: {
+    type: DataTypes.STRING(200)
+  },
+  description: {
+    type: DataTypes.TEXT
+  },
+  tabs: {
+    type: DataTypes.JSON
+  },
+  score_count: {
+    type: DataTypes.INTEGER
+  },
+  download_count: {
+    type: DataTypes.INTEGER
+  },
+  view_count: {
+    type: DataTypes.INTEGER
+  },
+  nickname: {
+    type: DataTypes.STRING(100)
+  },
+  status: {
+    type: DataTypes.TINYINT,
+    defaultValue: 1
   }
 }, {
-  tableName: 'wallpaper',
+  tableName: 'wallpapers',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at'

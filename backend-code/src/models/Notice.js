@@ -15,7 +15,7 @@ const Notice = sequelize.define('Notice', {
     type: DataTypes.TEXT
   }
 }, {
-  tableName: 'notice',
+  tableName: 'notices',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at'

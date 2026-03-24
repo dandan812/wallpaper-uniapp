@@ -3,6 +3,15 @@ const { Sequelize } = require('sequelize');
 const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
 
+function toLegacyWallpaper(record) {
+  if (!record) return record;
+  const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
+  return {
+    ...data,
+    _id: data.id
+  };
+}
+
 exports.getWallpapers = async (req, res) => {
   try {
     const { classid, limit = 10, skip = 0 } = req.query;
@@ -20,14 +29,15 @@ exports.getWallpapers = async (req, res) => {
 
     const wallpapers = await Wallpaper.findAll({
       where: { classid },
-      limit: parseInt(limit),
-      offset: parseInt(skip),
+      limit: parseInt(limit, 10),
+      offset: parseInt(skip, 10),
       order: [['id', 'DESC']],
       attributes: ['id', 'classid', 'smallPicurl', 'score']
     });
 
-    await redis.setex(cacheKey, 1800, JSON.stringify(wallpapers));
-    success(res, wallpapers, '查询成功');
+    const payload = wallpapers.map(toLegacyWallpaper);
+    await redis.setex(cacheKey, 1800, JSON.stringify(payload));
+    success(res, payload, '查询成功');
   } catch (err) {
     error(res, err.message);
   }
@@ -50,13 +60,13 @@ exports.getWallpaperDetail = async (req, res) => {
       return error(res, '壁纸不存在', 404);
     }
 
-    // 异步更新浏览量
     setImmediate(async () => {
       await wallpaper.increment('view_count');
     });
 
-    await redis.setex(cacheKey, 3600, JSON.stringify(wallpaper));
-    success(res, wallpaper, '查询成功');
+    const payload = toLegacyWallpaper(wallpaper);
+    await redis.setex(cacheKey, 3600, JSON.stringify(payload));
+    success(res, payload, '查询成功');
   } catch (err) {
     error(res, err.message);
   }
@@ -75,12 +85,13 @@ exports.getRandomWallpapers = async (req, res) => {
 
     const wallpapers = await Wallpaper.findAll({
       order: Sequelize.literal('RAND()'),
-      limit: parseInt(limit),
+      limit: parseInt(limit, 10),
       attributes: ['id', 'classid', 'smallPicurl', 'score']
     });
 
-    await redis.setex(cacheKey, 300, JSON.stringify(wallpapers));
-    success(res, wallpapers, '查询成功');
+    const payload = wallpapers.map(toLegacyWallpaper);
+    await redis.setex(cacheKey, 300, JSON.stringify(payload));
+    success(res, payload, '查询成功');
   } catch (err) {
     error(res, err.message);
   }
@@ -109,14 +120,15 @@ exports.searchWallpapers = async (req, res) => {
           { tabs: { [Sequelize.Op.like]: `%${keyword}%` } }
         ]
       },
-      limit: parseInt(limit),
-      offset: parseInt(skip),
+      limit: parseInt(limit, 10),
+      offset: parseInt(skip, 10),
       order: [['id', 'DESC']],
       attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
     });
 
-    await redis.setex(cacheKey, 600, JSON.stringify(wallpapers));
-    success(res, wallpapers, '查询成功');
+    const payload = wallpapers.map(toLegacyWallpaper);
+    await redis.setex(cacheKey, 600, JSON.stringify(payload));
+    success(res, payload, '查询成功');
   } catch (err) {
     error(res, err.message);
   }

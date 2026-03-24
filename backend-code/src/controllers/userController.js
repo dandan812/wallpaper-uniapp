@@ -5,25 +5,57 @@ const Wallpaper = require('../models/Wallpaper');
 const { success, error } = require('../utils/response');
 const { Sequelize } = require('sequelize');
 
+function toLegacyWallpaper(record) {
+  if (!record) return record;
+  const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
+  return {
+    ...data,
+    _id: data.id
+  };
+}
+
+function parseAddress(address) {
+  if (!address) {
+    return {
+      country: '',
+      province: '',
+      city: ''
+    };
+  }
+
+  const parts = String(address)
+    .split(/[\s,/-]+/)
+    .map(item => item.trim())
+    .filter(Boolean);
+
+  return {
+    country: parts[0] || '',
+    province: parts[1] || parts[0] || '',
+    city: parts[2] || parts[1] || parts[0] || ''
+  };
+}
+
 exports.getUserInfo = async (req, res) => {
   try {
     const { userId } = req.query;
-
-    if (!userId) {
-      return error(res, '缺少用户ID', 400);
-    }
-
-    const user = await User.findByPk(userId);
+    const user = userId
+      ? await User.findByPk(userId)
+      : await User.findOne({ order: [['id', 'ASC']] });
 
     if (!user) {
       return error(res, '用户不存在', 404);
     }
 
-    const scoreCount = await Score.count({ where: { user_id: userId } });
-    const downloadCount = await Download.count({ where: { user_id: userId } });
+    const currentUserId = user.id;
+    const scoreCount = await Score.count({ where: { user_id: currentUserId } });
+    const downloadCount = await Download.count({ where: { user_id: currentUserId } });
 
     const userInfo = {
       ...user.toJSON(),
+      IP: user.ip || '',
+      address: parseAddress(user.address),
+      scoreSize: scoreCount,
+      downloadSize: downloadCount,
       score_count: scoreCount,
       download_count: downloadCount
     };
@@ -43,7 +75,7 @@ exports.setupScore = async (req, res) => {
     }
 
     if (scoreValue < 0 || scoreValue > 5) {
-      return error(res, '评分必须在0-5之间', 400);
+      return error(res, '评分必须在 0 到 5 之间', 400);
     }
 
     const wallpaper = await Wallpaper.findByPk(wallpaperId);
@@ -51,7 +83,7 @@ exports.setupScore = async (req, res) => {
       return error(res, '壁纸不存在', 404);
     }
 
-    const [score, created] = await Score.findOrCreate({
+    const [, created] = await Score.findOrCreate({
       where: { user_id: userId, wallpaper_id: wallpaperId },
       defaults: { score: scoreValue }
     });
@@ -60,7 +92,6 @@ exports.setupScore = async (req, res) => {
       return error(res, '您已经评分过了', 400);
     }
 
-    // 异步更新壁纸平均分
     setImmediate(async () => {
       const avgScore = await Score.findOne({
         where: { wallpaper_id: wallpaperId },
@@ -100,7 +131,6 @@ exports.downloadWall = async (req, res) => {
       wallpaper_id: wallpaperId
     });
 
-    // 异步更新下载次数
     setImmediate(async () => {
       await wallpaper.increment('download_count');
     });
@@ -128,11 +158,14 @@ exports.getUserWallList = async (req, res) => {
           model: Wallpaper,
           attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
         }],
-        limit: parseInt(limit),
-        offset: parseInt(skip),
+        limit: parseInt(limit, 10),
+        offset: parseInt(skip, 10),
         order: [['created_at', 'DESC']]
       });
-      wallpapers = scores.map(s => ({ ...s.Wallpaper.toJSON(), user_score: s.score }));
+      wallpapers = scores.map(item => ({
+        ...toLegacyWallpaper(item.Wallpaper),
+        user_score: item.score
+      }));
     } else if (type === 'download') {
       const downloads = await Download.findAll({
         where: { user_id: userId },
@@ -140,11 +173,11 @@ exports.getUserWallList = async (req, res) => {
           model: Wallpaper,
           attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
         }],
-        limit: parseInt(limit),
-        offset: parseInt(skip),
+        limit: parseInt(limit, 10),
+        offset: parseInt(skip, 10),
         order: [['created_at', 'DESC']]
       });
-      wallpapers = downloads.map(d => d.Wallpaper.toJSON());
+      wallpapers = downloads.map(item => toLegacyWallpaper(item.Wallpaper));
     } else {
       return error(res, '无效的类型参数', 400);
     }

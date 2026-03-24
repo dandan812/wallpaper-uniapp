@@ -168,6 +168,8 @@ getUserInfo();
 				.left{
 					display: flex;
 					align-items: center;
+					flex: 1;
+					min-width: 0;
 					:deep(){
 						.uni-icons{
 							color:$brand-theme-color !important;
@@ -175,16 +177,25 @@ getUserInfo();
 					}
 					.text{
 						padding-left: 20rpx;
-						color:#666
+						color:#666;
+						line-height: 1.2;
 					}
 				}
 				.right{
 					display: flex;
 					align-items: center;
+					justify-content: flex-end;
+					flex-shrink: 0;
+					min-width: 88rpx;
+					gap: 10rpx;
 					.text{
 						font-size: 28rpx;
 						color:#aaa;
-						
+						line-height: 1;
+						white-space: nowrap;
+					}
+					.text:empty{
+						display: none;
 					}
 				}
 				button{

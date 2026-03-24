@@ -16,17 +16,20 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(100)
   },
   avatar: {
-    type: DataTypes.STRING(255)
+    type: DataTypes.STRING(500)
   },
   ip: {
     type: DataTypes.STRING(50)
   },
-  ip_location: {
-    type: DataTypes.STRING(100)
+  address: {
+    type: DataTypes.STRING(200)
   },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  last_login_at: {
+    type: DataTypes.DATE
   }
 }, {
   tableName: 'users',

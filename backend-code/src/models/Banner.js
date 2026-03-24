@@ -19,7 +19,7 @@ const Banner = sequelize.define('Banner', {
     defaultValue: 0
   }
 }, {
-  tableName: 'banner',
+  tableName: 'banners',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at'
