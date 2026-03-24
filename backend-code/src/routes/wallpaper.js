@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const wallpaperController = require('../controllers/wallpaperController');
 
+// 壁纸路由覆盖列表、详情、推荐和搜索，是前端访问最频繁的一组接口。
 router.get('/wallList', wallpaperController.getWallpapers);
 router.get('/detailWall/:id', wallpaperController.getWallpaperDetail);
 router.get('/randomWall', wallpaperController.getRandomWallpapers);

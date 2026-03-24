@@ -14,6 +14,9 @@ function createPayload(errCode, errMsg, data = null, total = null) {
 }
 
 function isResponseObject(target) {
+  // 兼容两种调用方式：
+  // 1. success(res, data, msg)
+  // 2. const result = success(data, msg, total)
   return target && typeof target.status === 'function' && typeof target.json === 'function';
 }
 
@@ -37,6 +40,8 @@ exports.success = (resOrData = {}, dataOrMsg = '查询成功', msgOrTotal = null
 };
 
 exports.error = (resOrMsg = '请求失败', msgOrCode = 400, codeMaybe = null) => {
+  // error 也支持“直接返回对象”和“直接写入 res”两种模式，
+  // 这样可以兼容历史 controller，逐步迁移而不是一次性重写。
   if (isResponseObject(resOrMsg)) {
     const statusCode = typeof codeMaybe === 'number' ? codeMaybe : 400;
     return resOrMsg.status(statusCode).json(

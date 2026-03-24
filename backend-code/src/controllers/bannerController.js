@@ -5,6 +5,7 @@ const { success, error } = require('../utils/response');
 function toLegacyBanner(record) {
   if (!record) return record;
   const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
+  // 轮播图也保留 _id，保证首页旧组件还能直接读取。
   return {
     ...data,
     _id: data.id
@@ -13,6 +14,7 @@ function toLegacyBanner(record) {
 
 exports.getBanners = async (req, res) => {
   try {
+    // 轮播图变动频率很低，适合用一个固定 key 长时间缓存。
     const cacheKey = 'banners:list';
     const cached = await redis.get(cacheKey);
 
@@ -34,3 +36,4 @@ exports.getBanners = async (req, res) => {
 };
 
 exports.getHomeBanner = exports.getBanners;
+// /homeBanner 是前端历史命名，这里直接复用同一套逻辑，避免两份实现分叉。

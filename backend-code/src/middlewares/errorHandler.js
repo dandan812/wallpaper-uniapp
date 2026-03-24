@@ -1,4 +1,5 @@
 const errorHandler = (err, req, res, next) => {
+  // Express 错误中间件签名必须保留 next，即使当前没有直接使用。
   console.error('Error:', err);
 
   const status = err.status || 500;

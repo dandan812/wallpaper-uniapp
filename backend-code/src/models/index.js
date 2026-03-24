@@ -8,6 +8,8 @@ const Score = require('./Score');
 const Download = require('./Download');
 
 // 定义关联关系
+// 在模型入口统一声明关联，避免 controller 中重复拼接外键关系。
+// 当前这组关系主要服务于“评分/下载记录 反查 壁纸”和“用户历史列表”。
 Score.belongsTo(Wallpaper, { foreignKey: 'wallpaper_id' });
 Wallpaper.hasMany(Score, { foreignKey: 'wallpaper_id' });
 

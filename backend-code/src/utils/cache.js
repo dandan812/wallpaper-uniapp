@@ -3,6 +3,7 @@ const redis = require('../config/redis');
 class CacheUtil {
   async get(key) {
     try {
+      // 统一在工具层完成 JSON 反序列化，业务层只拿对象。
       const data = await redis.get(key);
       return data ? JSON.parse(data) : null;
     } catch (err) {
@@ -13,6 +14,7 @@ class CacheUtil {
 
   async set(key, value, ttl = 3600) {
     try {
+      // 默认缓存 1 小时，具体接口可以按业务热度覆盖 ttl。
       await redis.setex(key, ttl, JSON.stringify(value));
       return true;
     } catch (err) {
@@ -33,6 +35,7 @@ class CacheUtil {
 
   async clear(pattern) {
     try {
+      // 这里用 pattern 批量删缓存，适合数据更新后按前缀失效一组 key。
       const keys = await redis.keys(pattern);
       if (keys.length > 0) {
         await redis.del(...keys);

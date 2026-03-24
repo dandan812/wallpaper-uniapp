@@ -6,6 +6,7 @@ const { success, error } = require('../utils/response');
 function toLegacyWallpaper(record) {
   if (!record) return record;
   const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
+  // 继续保留 _id，避免旧前端页面和缓存数据因为字段名变化直接失效。
   return {
     ...data,
     _id: data.id
@@ -21,6 +22,8 @@ exports.getWallpapers = async (req, res) => {
       pageNum = 1,
       pageSize = 10
     } = req.query;
+    // 当前接口优先推荐使用 limit + skip，
+    // 但仍兼容 pageNum + pageSize，方便老页面平滑过渡。
     const currentLimit = parseInt(limit ?? pageSize, 10);
     const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
 
@@ -28,6 +31,7 @@ exports.getWallpapers = async (req, res) => {
       return error(res, '缺少分类ID', 400);
     }
 
+    // 分类列表天然适合缓存，key 中必须带上分页参数，避免串页。
     const cacheKey = `wallpapers:${classid}:${currentLimit}:${currentSkip}`;
     const cached = await redis.get(cacheKey);
 
@@ -68,6 +72,7 @@ exports.getWallpaperDetail = async (req, res) => {
       return error(res, '壁纸不存在', 404);
     }
 
+    // 浏览量更新不阻塞主响应，先把详情返回给前端再异步自增。
     setImmediate(async () => {
       await wallpaper.increment('view_count');
     });
@@ -84,6 +89,7 @@ exports.getRandomWallpapers = async (req, res) => {
   try {
     const { limit = 9 } = req.query;
 
+    // 随机推荐缓存时间较短，避免首页长时间看到完全相同的结果。
     const cacheKey = `random_wallpapers:${limit}`;
     const cached = await redis.get(cacheKey);
 
@@ -114,6 +120,7 @@ exports.searchWallpapers = async (req, res) => {
       pageNum = 1,
       pageSize = 10
     } = req.query;
+    // 搜索列表与分类列表保持同一套分页兼容规则，便于前端统一调用。
     const currentLimit = parseInt(limit ?? pageSize, 10);
     const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
 
@@ -128,6 +135,7 @@ exports.searchWallpapers = async (req, res) => {
       return success(res, JSON.parse(cached), '查询成功');
     }
 
+    // 当前搜索能力走模糊匹配，覆盖标题、描述和标签三个常用字段。
     const wallpapers = await Wallpaper.findAll({
       where: {
         [Sequelize.Op.or]: [
