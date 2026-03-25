@@ -68,4 +68,5 @@ backend-code/
 - [快速开始](../docs/getting-started/快速开始.md)
 - [前后端配置](../docs/configuration/前后端配置.md)
 - [后端部署](../docs/deployment/后端部署.md)
+- [后端代码阅读说明](../docs/reference/后端代码阅读说明.md)
 - [项目概览](../docs/reference/项目概览.md)

@@ -11,6 +11,7 @@
 | 部署后端 API | [后端部署](./deployment/后端部署.md) |
 | 部署 H5 前端 | [前端 H5 部署](./deployment/前端H5部署.md) |
 | 验证接口是否可用 | [API 测试](./reference/API测试.md) |
+| 阅读后端代码 | [后端代码阅读说明](./reference/后端代码阅读说明.md) |
 | 整理 Apifox 接口文档 | [Apifox接口清单](./reference/Apifox接口清单.md) |
 | 导入 Apifox | [Apifox导入.json](./reference/Apifox导入.json) |
 | 了解项目结构和已知问题 | [项目概览](./reference/项目概览.md) |
@@ -21,6 +22,7 @@
 - [前端H5部署](./deployment/前端H5部署.md)
 - [Apifox接口清单](./reference/Apifox接口清单.md)
 - [Apifox导入.json](./reference/Apifox导入.json)
+- [后端代码阅读说明](./reference/后端代码阅读说明.md)
 
 ## 目录结构
 
@@ -36,6 +38,7 @@ docs/
 │   └── 前端H5部署.md
 ├── reference/
 │   ├── API测试.md
+│   ├── 后端代码阅读说明.md
 │   ├── Apifox导入.json
 │   ├── Apifox接口清单.md
 │   └── 项目概览.md

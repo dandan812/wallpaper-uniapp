@@ -2,8 +2,8 @@
     "openapi":  "3.0.3",
     "info":  {
                  "title":  "咸虾米壁纸 API",
-                 "description":  "根据当前后端实际实现整理，可直接导入 Apifox。已对齐 2026-03-24 的线上状态。为避免空参数误传，查询参数默认值已从导入文件中移除。",
-                 "version":  "1.1.1"
+                 "description":  "根据当前后端实际实现整理，可直接导入 Apifox。已对齐 2026-03-25 的线上代码状态。分页参数统一为 limit 和 skip。",
+                 "version":  "1.2.0"
              },
     "servers":  [
                     {
@@ -529,22 +529,6 @@
                                                                                   }
                                                                    },
                                                                    {
-                                                                       "name":  "pageNum",
-                                                                       "in":  "query",
-                                                                       "description":  "旧分页参数，默认 1",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
-                                                                       "name":  "pageSize",
-                                                                       "in":  "query",
-                                                                       "description":  "旧分页参数，默认 8",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
                                                                        "name":  "select",
                                                                        "in":  "query",
                                                                        "description":  "传 true 时仅返回精选分类",
@@ -773,22 +757,6 @@
                                                                        "schema":  {
                                                                                       "type":  "integer"
                                                                                   }
-                                                                   },
-                                                                   {
-                                                                       "name":  "pageNum",
-                                                                       "in":  "query",
-                                                                       "description":  "旧分页参数，默认 1",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
-                                                                       "name":  "pageSize",
-                                                                       "in":  "query",
-                                                                       "description":  "旧分页参数，默认 10",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
                                                                    }
                                                                ],
                                                 "responses":  {
@@ -891,22 +859,6 @@
                                                                          "name":  "skip",
                                                                          "in":  "query",
                                                                          "description":  "推荐使用，默认 0",
-                                                                         "schema":  {
-                                                                                        "type":  "integer"
-                                                                                    }
-                                                                     },
-                                                                     {
-                                                                         "name":  "pageNum",
-                                                                         "in":  "query",
-                                                                         "description":  "旧分页参数，默认 1",
-                                                                         "schema":  {
-                                                                                        "type":  "integer"
-                                                                                    }
-                                                                     },
-                                                                     {
-                                                                         "name":  "pageSize",
-                                                                         "in":  "query",
-                                                                         "description":  "旧分页参数，默认 10",
                                                                          "schema":  {
                                                                                         "type":  "integer"
                                                                                     }
@@ -1057,22 +1009,6 @@
                                                                            "name":  "skip",
                                                                            "in":  "query",
                                                                            "description":  "推荐使用，默认 0",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       },
-                                                                       {
-                                                                           "name":  "pageNum",
-                                                                           "in":  "query",
-                                                                           "description":  "旧分页参数，默认 1",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       },
-                                                                       {
-                                                                           "name":  "pageSize",
-                                                                           "in":  "query",
-                                                                           "description":  "旧分页参数，默认 10",
                                                                            "schema":  {
                                                                                           "type":  "integer"
                                                                                       }

@@ -77,14 +77,11 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `limit` | number | 否 | 推荐使用，默认 `8` |
 | `skip` | number | 否 | 推荐使用，默认 `0` |
-| `pageNum` | number | 否 | 旧参数，默认 `1` |
-| `pageSize` | number | 否 | 旧参数，默认 `8` |
 | `select` | string | 否 | 传 `true` 时仅返回精选分类 |
 
 说明：
 
-- 当前后端已经支持 `limit + skip`
-- 旧分页参数 `pageNum + pageSize` 仍兼容
+- 当前后端统一使用 `limit + skip`
 - 返回中同时保留 `id` 和 `_id`
 
 返回 `data` 示例：
@@ -211,13 +208,10 @@ Content-Type: application/json
 | `classid` | number | 是 | 分类 ID |
 | `limit` | number | 否 | 推荐使用，默认 `10` |
 | `skip` | number | 否 | 推荐使用，默认 `0` |
-| `pageNum` | number | 否 | 旧参数，默认 `1` |
-| `pageSize` | number | 否 | 旧参数，默认 `10` |
 
 说明：
 
-- 当前建议统一使用 `limit + skip`
-- 旧分页参数仍兼容
+- 当前统一使用 `limit + skip`
 
 返回 `data` 示例：
 
@@ -290,13 +284,10 @@ Content-Type: application/json
 | `keyword` | string | 是 | 搜索关键词 |
 | `limit` | number | 否 | 推荐使用，默认 `10` |
 | `skip` | number | 否 | 推荐使用，默认 `0` |
-| `pageNum` | number | 否 | 旧参数，默认 `1` |
-| `pageSize` | number | 否 | 旧参数，默认 `10` |
 
 说明：
 
-- 当前建议统一使用 `limit + skip`
-- 旧分页参数仍兼容
+- 当前统一使用 `limit + skip`
 
 返回 `data` 示例：
 
@@ -418,14 +409,11 @@ Content-Type: application/json
 | `userId` | number | 否 | 不传时回退到首个用户 |
 | `limit` | number | 否 | 推荐使用，默认 `10` |
 | `skip` | number | 否 | 推荐使用，默认 `0` |
-| `pageNum` | number | 否 | 旧参数，默认 `1` |
-| `pageSize` | number | 否 | 旧参数，默认 `10` |
 
 说明：
 
-- 当前建议统一使用 `limit + skip`
+- 当前统一使用 `limit + skip`
 - 未传 `userId` 时也会回退到首个用户
-- 旧分页参数仍兼容
 
 返回 `data` 示例：
 
@@ -456,8 +444,6 @@ Content-Type: application/json
 
 - `wallId`
 - `userScore`
-- `pageNum`
-- `pageSize`
 - `_id`
 
 ## 9. Apifox 录入建议

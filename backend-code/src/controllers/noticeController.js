@@ -2,10 +2,13 @@ const Notice = require('../models/Notice');
 const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
 
+// 公告列表和详情页曾经依赖 _id，所以这里统一补齐兼容字段。
 function toLegacyNotice(record) {
   if (!record) return record;
+
+  // 查询结果如果是 Sequelize 模型实例，先转成普通对象再处理。
   const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
-  // 公告接口继续兼容 _id，避免旧页面跳详情时找不到主键字段。
+
   return {
     ...data,
     _id: data.id
@@ -14,9 +17,11 @@ function toLegacyNotice(record) {
 
 exports.getNotices = async (req, res) => {
   try {
+    // limit / skip 都来自前端 query 参数。
+    // 例如：/api/notice?limit=10&skip=0
     const { limit = 10, skip = 0 } = req.query;
 
-    // 公告列表按分页参数区分缓存，避免第一页和第二页相互污染。
+    // 公告列表要按分页参数区分缓存，否则不同页会读到同一份数据。
     const cacheKey = `notices:list:${limit}:${skip}`;
     const cached = await redis.get(cacheKey);
 
@@ -24,29 +29,33 @@ exports.getNotices = async (req, res) => {
       return success(res, JSON.parse(cached), '查询成功');
     }
 
+    // 公告默认按 id 倒序，让最新公告排在最前面。
     const notices = await Notice.findAll({
       order: [['id', 'DESC']],
       limit: parseInt(limit, 10),
       offset: parseInt(skip, 10)
     });
 
+    // 转成前端结构后写入缓存，再返回给调用方。
     const payload = notices.map(toLegacyNotice);
     await redis.setex(cacheKey, 600, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {
+    // 公告接口异常一般来自数据库查询或缓存读写失败。
     error(res, err.message);
   }
 };
 
 exports.getNoticeDetail = async (req, res) => {
   try {
+    // 详情页的 id 来自路由参数，比如 /notice/1。
     const { id } = req.params;
 
     if (!id) {
       return error(res, '缺少公告ID', 400);
     }
 
-    // 详情页通常读取频率高于编辑频率，单条缓存性价比很高。
+    // 单条公告详情很适合缓存：读多写少，数据量也小。
     const cacheKey = `notice:detail:${id}`;
     const cached = await redis.get(cacheKey);
 
@@ -54,12 +63,14 @@ exports.getNoticeDetail = async (req, res) => {
       return success(res, JSON.parse(cached), '查询成功');
     }
 
+    // findByPk 表示按主键 id 直接查一条记录。
     const notice = await Notice.findByPk(id);
 
     if (!notice) {
       return error(res, '公告不存在', 404);
     }
 
+    // 返回前统一转一次结构，顺便补上 _id 字段。
     const payload = toLegacyNotice(notice);
     await redis.setex(cacheKey, 600, JSON.stringify(payload));
     success(res, payload, '查询成功');

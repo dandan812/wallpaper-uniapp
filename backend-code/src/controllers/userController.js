@@ -5,11 +5,13 @@ const Wallpaper = require('../models/Wallpaper');
 const { success, error } = require('../utils/response');
 const { Sequelize } = require('sequelize');
 
+// 用户历史相关接口还会返回壁纸数据，
+// 所以这里统一把壁纸记录转成兼容旧前端的结构。
 function toLegacyWallpaper(record) {
   if (!record) return record;
-  const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
 
-  // 用户历史页还在依赖 _id，这里统一兼容，避免 controller 外再做二次转换。
+  // Sequelize 模型实例先转普通对象，再补 _id。
+  const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
   return {
     ...data,
     _id: data.id
@@ -17,7 +19,8 @@ function toLegacyWallpaper(record) {
 }
 
 function parseAddress(address) {
-  // 数据库里 address 是一段字符串，这里拆成前端页面更容易直接渲染的结构。
+  // 数据库里 address 现在存的是一段字符串，
+  // 这里拆成 { country, province, city }，前端页面更好直接展示。
   if (!address) {
     return {
       country: '',
@@ -39,8 +42,9 @@ function parseAddress(address) {
 }
 
 async function resolveUserId(userId) {
-  // 当前项目还没有完整登录态，所以缺少 userId 时回退到首个用户，
-  // 这样个人页、评分、下载等接口在演示环境也能正常工作。
+  // 当前项目还没有完整登录态。
+  // 所以当接口没传 userId 时，这里会回退到数据库里的第一个用户，
+  // 这样“我的下载 / 我的评分 / 个人页”在演示环境也能正常跑通。
   if (userId) {
     return userId;
   }
@@ -51,9 +55,11 @@ async function resolveUserId(userId) {
 
 exports.getUserInfo = async (req, res) => {
   try {
+    // userId 来自前端 query 参数。
     const { userId } = req.query;
 
-    // 显式传 userId 时查指定用户，不传时回退到默认用户。
+    // 如果前端显式传了 userId，就查指定用户；
+    // 不传就回退到默认用户。
     const user = userId
       ? await User.findByPk(userId)
       : await User.findOne({ order: [['id', 'ASC']] });
@@ -62,11 +68,15 @@ exports.getUserInfo = async (req, res) => {
       return error(res, '用户不存在', 404);
     }
 
+    // 个人页上“我的评分 / 我的下载”是统计值，
+    // 所以这里顺手把数量也查出来。
     const currentUserId = user.id;
     const scoreCount = await Score.count({ where: { user_id: currentUserId } });
     const downloadCount = await Download.count({ where: { user_id: currentUserId } });
 
-    // 这里同时返回新旧两套统计字段，兼容旧前端文案和新接口文档。
+    // 这里同时返回新旧两套统计字段：
+    // scoreSize/downloadSize 给旧前端用，
+    // score_count/download_count 也保留给新文档和后续代码使用。
     const userInfo = {
       ...user.toJSON(),
       IP: user.ip || '',
@@ -85,6 +95,7 @@ exports.getUserInfo = async (req, res) => {
 
 exports.setupScore = async (req, res) => {
   try {
+    // 评分接口参数来自 POST body。
     const {
       userId,
       wallpaperId,
@@ -93,9 +104,9 @@ exports.setupScore = async (req, res) => {
       userScore
     } = req.body;
 
-    // 兼容新旧参数名：
-    // 新：wallpaperId + score
-    // 旧：wallId + userScore
+    // 这里同时兼容新旧两套参数名：
+    // 新前端：wallpaperId + score
+    // 旧前端：wallId + userScore
     const currentUserId = await resolveUserId(userId);
     const currentWallpaperId = wallpaperId || wallId;
     const scoreValue = score ?? userScore;
@@ -108,12 +119,15 @@ exports.setupScore = async (req, res) => {
       return error(res, '评分必须在 0 到 5 之间', 400);
     }
 
+    // 评分前先确认这张壁纸真实存在。
     const wallpaper = await Wallpaper.findByPk(currentWallpaperId);
     if (!wallpaper) {
       return error(res, '壁纸不存在', 404);
     }
 
-    // 每个用户对同一张壁纸只允许评分一次，避免重复刷分。
+    // findOrCreate 的意思是：
+    // 如果当前用户还没给这张图打过分，就创建一条评分记录；
+    // 如果已经打过分，就不再重复创建。
     const [, created] = await Score.findOrCreate({
       where: { user_id: currentUserId, wallpaper_id: currentWallpaperId },
       defaults: {
@@ -126,7 +140,8 @@ exports.setupScore = async (req, res) => {
       return error(res, '您已经评分过了', 400);
     }
 
-    // 平均分和评分人数异步回写到壁纸主表，减少主请求等待时间。
+    // 壁纸主表里还存着平均分和评分人数。
+    // 这里异步回写，避免前端等太久。
     setImmediate(async () => {
       const avgScore = await Score.findOne({
         where: { wallpaper_id: currentWallpaperId },
@@ -150,9 +165,11 @@ exports.setupScore = async (req, res) => {
 
 exports.downloadWall = async (req, res) => {
   try {
+    // 下载记录接口也是从 POST body 取参数。
     const { userId, wallpaperId, wallId } = req.body;
 
-    // 下载接口只认一张壁纸，不区分老参数还是新参数。
+    // 下载接口只需要确定“是谁下载了哪张图”，
+    // 所以旧参数 wallId 和新参数 wallpaperId 都统一收口到 currentWallpaperId。
     const currentUserId = await resolveUserId(userId);
     const currentWallpaperId = wallpaperId || wallId;
 
@@ -160,6 +177,7 @@ exports.downloadWall = async (req, res) => {
       return error(res, '参数不完整', 400);
     }
 
+    // 先确认目标壁纸存在，避免写入无效下载记录。
     const wallpaper = await Wallpaper.findByPk(currentWallpaperId);
     if (!wallpaper) {
       return error(res, '壁纸不存在', 404);
@@ -171,7 +189,8 @@ exports.downloadWall = async (req, res) => {
       classid: wallpaper.classid
     });
 
-    // 下载次数不是强一致关键数据，异步自增就够用。
+    // 下载次数只是展示数据，不要求强一致，
+    // 所以这里异步自增即可。
     setImmediate(async () => {
       await wallpaper.increment('download_count');
     });
@@ -184,28 +203,30 @@ exports.downloadWall = async (req, res) => {
 
 exports.getUserWallList = async (req, res) => {
   try {
+    // 用户历史列表的参数来自 query：
+    // type 决定查评分历史还是下载历史，
+    // limit / skip 控制分页。
     const {
       userId,
       type,
-      limit,
-      skip,
-      pageNum = 1,
-      pageSize = 10
+      limit = 10,
+      skip = 0
     } = req.query;
-
-    // 用户历史列表延续全项目的分页兼容策略，方便新旧页面共存。
     const currentUserId = await resolveUserId(userId);
-    const currentLimit = parseInt(limit ?? pageSize, 10);
-    const currentSkip = parseInt(skip ?? ((parseInt(pageNum, 10) - 1) * currentLimit), 10);
+    const currentLimit = parseInt(limit, 10);
+    const currentSkip = parseInt(skip, 10);
 
     if (!currentUserId || !type) {
       return error(res, '参数不完整', 400);
     }
 
+    // 最终都整理成 wallpapers 数组返回给前端，
+    // 这样 classlist 页面可以直接复用渲染逻辑。
     let wallpapers = [];
 
     if (type === 'score') {
-      // 评分历史额外带回 user_score，前端可以直接展示“我打了几分”。
+      // 评分历史要额外带上 user_score，
+      // 因为前端可能需要显示“我给这张图打了几分”。
       const scores = await Score.findAll({
         where: { user_id: currentUserId },
         include: [{
@@ -221,7 +242,7 @@ exports.getUserWallList = async (req, res) => {
         user_score: item.score
       }));
     } else if (type === 'download') {
-      // 下载历史只关心壁纸本身，不需要额外附带评分字段。
+      // 下载历史只需要返回壁纸本身，不需要额外评分字段。
       const downloads = await Download.findAll({
         where: { user_id: currentUserId },
         include: [{
@@ -234,6 +255,7 @@ exports.getUserWallList = async (req, res) => {
       });
       wallpapers = downloads.map(item => toLegacyWallpaper(item.Wallpaper));
     } else {
+      // type 只允许 score / download 两种。
       return error(res, '无效的类型参数', 400);
     }
 
