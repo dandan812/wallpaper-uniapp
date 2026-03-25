@@ -1,41 +1,38 @@
-**/unpackage/
+# Dependencies
 **/node_modules/
 
-# 环境配置文件
+# Frontend build output
+**/unpackage/
+dist/
+build/
+
+# Environment files
 .env
-config/env.js
-
-# 后端依赖和日志
-backend-code/node_modules/
-backend-code/logs/
 backend-code/.env
+univue3/config/env.js
 
-# 日志文件
+# Logs
 *.log
 npm-debug.log*
 
-# 编辑器
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# 系统文件
+# OS files
 .DS_Store
 Thumbs.db
 
-# 构建产物
-dist/
-build/
-
-# 临时文件
+# Temporary files
 *.tmp
 *.temp
 
 # PM2
 .pm2/
 
-# 数据库备份
+# Database backups
 *.sql.gz
 *.sql.bak
