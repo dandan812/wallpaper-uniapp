@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # 数据库初始化脚本
 # 创建所有必要的数据表
@@ -137,17 +137,17 @@ CREATE TABLE IF NOT EXISTS `notices` (
 
 -- 插入分类
 INSERT INTO `categories` (`name`, `picurl`, `sort`, `select`) VALUES
-('可爱萌宠', 'https://example.com/cat1.jpg', 1, 1),
-('风景名胜', 'https://example.com/cat2.jpg', 2, 1),
-('动漫二次元', 'https://example.com/cat3.jpg', 3, 1),
-('创意色彩', 'https://example.com/cat4.jpg', 4, 0),
-('游戏电竞', 'https://example.com/cat5.jpg', 5, 0);
+('可爱萌宠', 'https://picsum.photos/id/1025/480/854', 1, 1),
+('风景名胜', 'https://picsum.photos/id/1015/480/854', 2, 1),
+('动漫二次元', 'https://picsum.photos/id/1005/480/854', 3, 1),
+('创意色彩', 'https://picsum.photos/id/1060/480/854', 4, 0),
+('游戏电竞', 'https://picsum.photos/id/1041/480/854', 5, 0);
 
 -- 插入轮播图
 INSERT INTO `banners` (`picurl`, `url`, `sort`, `status`) VALUES
-('https://example.com/banner1.jpg', '/pages/classlist/classlist?id=1', 1, 1),
-('https://example.com/banner2.jpg', '/pages/classlist/classlist?id=2', 2, 1),
-('https://example.com/banner3.jpg', '/pages/classlist/classlist?id=3', 3, 1);
+('https://picsum.photos/id/1025/960/540', '/pages/classlist/classlist?id=1&name=可爱萌宠', 1, 1),
+('https://picsum.photos/id/1015/960/540', '/pages/classlist/classlist?id=2&name=风景名胜', 2, 1),
+('https://picsum.photos/id/1005/960/540', '/pages/classlist/classlist?id=3&name=动漫二次元', 3, 1);
 
 -- 插入公告
 INSERT INTO `notices` (`title`, `content`, `author`, `select`, `status`) VALUES
@@ -188,3 +188,4 @@ fi
 rm -f /tmp/init-tables.sql
 
 echo "下一步: 部署后端应用"
+

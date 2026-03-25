@@ -20,7 +20,7 @@
 						<image :src="item.picurl" mode="aspectFill"></image>
 					</navigator>
 					
-					<navigator v-else :url="`/pages/classlist/classlist?${item.url}`" class="like">
+					<navigator v-else :url="resolveBannerUrl(item.url)" class="like">
 						<image :src="item.picurl" mode="aspectFill"></image>
 					</navigator>
 				</swiper-item>				
@@ -100,6 +100,11 @@ const bannerList= ref([]);
 const randomList = ref([]);
 const noticeList = ref([]);
 const classifyList = ref([]);
+
+const resolveBannerUrl = (url = "")=>{
+	if(!url) return "/pages/classify/classify";
+	return url.startsWith("/pages/") ? url : `/pages/classlist/classlist?${url}`;
+}
 
 const getBanner = async ()=>{
 	let res =await apiGetBanner();	

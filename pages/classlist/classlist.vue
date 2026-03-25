@@ -44,10 +44,10 @@ onLoad((e)=>{
 	if(type) queryParams.type = type;
 	if(id) queryParams.classid = id;	
 	
-	pageName = name	
+	pageName = name || "列表"	
 	//修改导航标题
 	uni.setNavigationBarTitle({
-		title:name
+		title:pageName
 	})
 	//执行获取分类列表方法
 	getClassList();
@@ -62,8 +62,18 @@ onReachBottom(()=>{
 //获取分类列表网络数据
 const getClassList = async ()=>{
 	let res;
-	if(queryParams.classid) res = await apiGetClassList(queryParams);
-	if(queryParams.type) res = await apiGetHistoryList(queryParams);
+	if(queryParams.classid) {
+		res = await apiGetClassList(queryParams);
+	} else if(queryParams.type) {
+		res = await apiGetHistoryList(queryParams);
+	}
+
+	if(!res || !Array.isArray(res.data)) {
+		noData.value = true;
+		classList.value = [];
+		if(!queryParams.classid && !queryParams.type) gotoHome();
+		return;
+	}
 	
 	classList.value = [...classList.value , ...res.data];
 	if(queryParams.limit > res.data.length) noData.value = true; 

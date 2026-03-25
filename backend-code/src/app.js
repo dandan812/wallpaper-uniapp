@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+// 执行后，这些env值就会进入：
+// process.env 这个对象里，后续就可以通过 process.env.VARIABLE_NAME 来访问这些环境变量了。
 require('dotenv').config();
 require('./models');
 

@@ -1,6 +1,6 @@
-const Category = require('../models/Category');
-const redis = require('../config/redis');
-const { success, error } = require('../utils/response');
+const Category = require("../models/Category");
+const redis = require("../config/redis");
+const { success, error } = require("../utils/response");
 
 // 把 Sequelize 查询结果转换成前端更容易直接消费的结构。
 // 这里保留历史字段 _id / updateTime，目的是让旧页面在不改代码的情况下也能继续工作。
@@ -9,14 +9,14 @@ function toLegacyCategory(record) {
 
   // Sequelize 查出来的是模型实例，toJSON() 之后才是普通对象。
   // 如果外部已经传入普通对象，这里就直接复用。
-  const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
+  const data = typeof record.toJSON === "function" ? record.toJSON() : record;
 
   return {
     ...data,
     // 旧前端曾经把主键当成 _id 读取，所以这里继续补一份。
     _id: data.id,
     // 旧前端有些地方用 updateTime，不直接读 updated_at，所以这里统一兼容。
-    updateTime: data.updated_at || data.updatedAt || null
+    updateTime: data.updated_at || data.updatedAt || null,
   };
 }
 
@@ -30,7 +30,7 @@ exports.getClassify = async (req, res) => {
       // skip: 跳过前面多少条，默认从第 0 条开始。
       skip = 0,
       // select=true 时，表示前端只想拿“精选分类”。
-      select
+      select,
     } = req.query;
 
     // 前端传过来的 query 参数本质上是字符串，
@@ -57,19 +57,31 @@ exports.getClassify = async (req, res) => {
 
     // 当前端传 select=true 时，只查被标记为精选的分类。
     // 这些数据主要给首页“专题精选”模块使用。
-    if (select === 'true') where.select = 1;
+    if (select === "true") where.select = 1;
 
-    // findAndCountAll 会一次返回两部分：
+    // Sequelize 提供的方法findAndCountAll 会一次返回两部分：
     // 1. count: 总条数
     // 2. rows: 当前页数据
     // 这样前端后续如果要做分页，总数也已经有了。
     const { count, rows } = await Category.findAndCountAll({
       where,
+      // where = 筛选条件（查谁）
+      // order = 排序规则（怎么排）
+      // limit = 限制数量（拿多少）
+      // offset = 偏移位置（从哪开始）
       // 分类按 sort 升序排列，数值越小越靠前。
-      order: [['sort', 'ASC']],
+      // order: [
+      //   ['sort', 'ASC'],
+      //   ['created_at', 'DESC']
+      // ]
+      // 👉 意思：
+      // 先按 sort 排
+      // 如果 sort 一样 → 再按时间排
+      // order: ['字段名', '排序方式']
+      order: [["sort", "ASC"]],
       // 精选分类通常数据量不大，首页希望一次取全，所以不做分页截断。
-      limit: select === 'true' ? undefined : currentLimit,
-      offset: select === 'true' ? undefined : currentSkip
+      limit: select === "true" ? undefined : currentLimit,
+      offset: select === "true" ? undefined : currentSkip,
     });
 
     // 把数据库记录转换成前端需要的结构，并补齐兼容字段。
@@ -77,7 +89,7 @@ exports.getClassify = async (req, res) => {
 
     // success(...) 会生成统一的返回格式：
     // { errCode, errMsg, data, timeCost, total }
-    const result = success(payload, '查询成功', count);
+    const result = success(payload, "查询成功", count);
 
     // 把查询结果写入 Redis，缓存 600 秒（10 分钟）。
     // 分类数据变化不算频繁，短缓存能明显减少重复查询。
@@ -87,9 +99,9 @@ exports.getClassify = async (req, res) => {
     res.json(result);
   } catch (err) {
     // 这里主要兜底数据库错误、Redis 错误、参数异常等情况。
-    console.error('获取分类失败:', err);
+    console.error("获取分类失败:", err);
 
     // 统一返回错误结构，避免前端拿到不可预测的报错格式。
-    res.json(error('获取分类失败'));
+    res.json(error("获取分类失败"));
   }
 };
