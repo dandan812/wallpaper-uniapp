@@ -121,63 +121,85 @@ getUserInfo();
 
 <style lang="scss" scoped>
 .userLayout{
+	padding-bottom: 80rpx;
 	.userInfo{
+		width: 690rpx;
+		margin: 10rpx auto 0;
+		padding: 40rpx 32rpx 44rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex-direction: column;		
-		padding:50rpx 0;
+		flex-direction: column;
+		border-radius: 36rpx;
+		background: rgba(255,255,255,0.72);
+		border: 1px solid rgba(255,255,255,0.85);
+		box-shadow: 0 24rpx 60rpx rgba(15, 35, 25, 0.08);
+		backdrop-filter: blur(18rpx);
 		.avatar{
-			width: 160rpx;
-			height: 160rpx;
+			width: 168rpx;
+			height: 168rpx;
 			border-radius: 50%;
 			overflow: hidden;
+			padding: 10rpx;
+			background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.55));
+			box-shadow: 0 18rpx 40rpx rgba(40,179,137,0.16);
 			image{
 				width: 100%;
 				height: 100%;
+				border-radius: 50%;
+				display: block;
 			}
 		}
 		.ip{
-			font-size: 44rpx;
-			color:#333;
-			padding:20rpx 0 5rpx;
+			font-size: 50rpx;
+			font-weight: 600;
+			color:#243247;
+			letter-spacing: 1rpx;
+			padding:26rpx 0 10rpx;
 		}
 		.address{
 			font-size: 28rpx;
-			color:#aaa;
+			color:#7f8a98;
+			line-height: 1.6;
+			text-align: center;
 		}
 	}
 	
 	.section{
 		width: 690rpx;
-		margin:50rpx auto;
-		border:1px solid #eee;
-		border-radius: 10rpx;
-		box-shadow: 0 0 30rpx rgba(0,0,0,0.05);
+		margin: 26rpx auto 0;
+		border-radius: 30rpx;
+		overflow: hidden;
+		border: 1px solid rgba(255,255,255,0.9);
+		background: rgba(255,255,255,0.82);
+		box-shadow: 0 20rpx 50rpx rgba(15, 35, 25, 0.07);
 		.list{
 			.row{
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				padding:0 30rpx;
-				height: 100rpx;
-				border-bottom: 1px solid #eee;
+				padding:0 30rpx 0 28rpx;
+				min-height: 116rpx;
+				border-bottom: 1px solid rgba(36,50,71,0.06);
 				position: relative;
-				background: #fff;
+				background: transparent;
 				&:last-child{border-bottom:0}
 				.left{
 					display: flex;
 					align-items: center;
 					flex: 1;
 					min-width: 0;
+					gap: 18rpx;
 					:deep(){
 						.uni-icons{
 							color:$brand-theme-color !important;
+							font-size: 22px !important;
 						}
 					}
 					.text{
-						padding-left: 20rpx;
-						color:#666;
+						color:#334155;
+						font-size: 34rpx;
+						font-weight: 500;
 						line-height: 1.2;
 					}
 				}
@@ -185,24 +207,34 @@ getUserInfo();
 					display: flex;
 					align-items: center;
 					justify-content: flex-end;
-					flex-shrink: 0;
-					min-width: 88rpx;
-					gap: 10rpx;
+					gap: 8rpx;
+					position: absolute;
+					right: 30rpx;
+					top: 50%;
+					transform: translateY(-50%);
 					.text{
-						font-size: 28rpx;
-						color:#aaa;
+						text-align: right;
+						font-size: 34rpx;
+						font-weight: 500;
+						color:#90a0b3;
 						line-height: 1;
 						white-space: nowrap;
 					}
 					.text:empty{
 						display: none;
 					}
+					:deep(){
+						.uni-icons{
+							color:#b8c2cf !important;
+							font-size: 18px !important;
+						}
+					}
 				}
 				button{
 					position: absolute;
 					top:0;
 					left:0;
-					height: 100rpx;
+					height: 116rpx;
 					width:100%;
 					opacity: 0;
 				}
