@@ -289,4 +289,100 @@ getClassify();
 		}
 	}
 }
+
+@media screen and (min-width: 960px) {
+	.homeLayout{
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 24px 24px 96px;
+
+		.banner{
+			width: 100%;
+			padding: 20px 0 0;
+
+			swiper{
+				width: 100%;
+				height: 420px;
+
+				&-item{
+					padding: 0;
+
+					.like{
+						display: block;
+
+						image{
+							border-radius: 18px;
+						}
+					}
+				}
+			}
+		}
+
+		.notice{
+			width: 100%;
+			height: 56px;
+			line-height: 56px;
+			margin-top: 20px;
+			padding: 0 14px;
+			box-sizing: border-box;
+
+			.left{
+				width: 110px;
+
+				.text{
+					font-size: 16px;
+				}
+			}
+
+			.center swiper-item{
+				font-size: 16px;
+			}
+
+			.right{
+				width: 48px;
+			}
+		}
+
+		.select{
+			padding-top: 36px;
+
+			.content{
+				width: 100%;
+				margin-left: 0;
+				margin-top: 20px;
+
+				scroll-view{
+					display: flex;
+					gap: 16px;
+				}
+
+				.box{
+					width: 180px;
+					height: 320px;
+					margin-right: 0;
+					flex: none;
+
+					image{
+						border-radius: 14px;
+					}
+				}
+			}
+		}
+
+		.theme{
+			padding: 40px 0 0;
+
+			.more{
+				font-size: 18px;
+			}
+
+			.content{
+				margin-top: 20px;
+				padding: 0;
+				gap: 18px;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+			}
+		}
+	}
+}
 </style>

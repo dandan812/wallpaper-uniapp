@@ -56,4 +56,14 @@ getClassify();
 	grid-template-columns: repeat(3,1fr);
 	gap:15rpx;
 }
+
+@media screen and (min-width: 960px) {
+	.classify{
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 24px 24px 96px;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 18px;
+	}
+}
 </style>

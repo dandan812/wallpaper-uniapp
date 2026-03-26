@@ -3,19 +3,19 @@ import { request } from "@/utils/request.js";
 // 轮播图
 export function apiGetBanner() {
 	return request({
-		url: "/homeBanner"
+		url: "/banners"
 	});
 }
 
 // 随机壁纸
 export function apiGetDayRandom() {
-	return request({ url: "/randomWall" });
+	return request({ url: "/wallpapers/random" });
 }
 
 // 公告列表
 export function apiGetNotice(data = {}) {
 	return request({
-		url: "/wallNewsList",
+		url: "/notices",
 		data
 	});
 }
@@ -23,14 +23,14 @@ export function apiGetNotice(data = {}) {
 // 公告详情
 export function apiNoticeDetail(data = {}) {
 	return request({
-		url: `/wallNewsDetail/${data.id}`
+		url: `/notices/${data.id}`
 	});
 }
 
 // 分类列表
 export function apiGetClassify(data = {}) {
 	return request({
-		url: "/classify",
+		url: "/categories",
 		data
 	});
 }
@@ -38,7 +38,7 @@ export function apiGetClassify(data = {}) {
 // 壁纸列表
 export function apiGetClassList(data = {}) {
 	return request({
-		url: "/wallList",
+		url: "/wallpapers",
 		data
 	});
 }
@@ -46,14 +46,14 @@ export function apiGetClassList(data = {}) {
 // 壁纸详情
 export function apiDetailWall(data = {}) {
 	return request({
-		url: `/detailWall/${data.id}`
+		url: `/wallpapers/${data.id}`
 	});
 }
 
 // 搜索壁纸
 export function apiSearchData(data = {}) {
 	return request({
-		url: "/searchWall",
+		url: "/wallpapers/search",
 		data
 	});
 }
@@ -61,7 +61,7 @@ export function apiSearchData(data = {}) {
 // 评分
 export function apiGetSetupScore(data = {}) {
 	return request({
-		url: "/setupScore",
+		url: "/wallpapers/score",
 		method: "POST",
 		data
 	});
@@ -70,7 +70,7 @@ export function apiGetSetupScore(data = {}) {
 // 下载记录
 export function apiWriteDownload(data = {}) {
 	return request({
-		url: "/downloadWall",
+		url: "/wallpapers/download",
 		method: "POST",
 		data
 	});
@@ -79,7 +79,7 @@ export function apiWriteDownload(data = {}) {
 // 用户信息
 export function apiUserInfo(data = {}) {
 	return request({
-		url: "/userInfo",
+		url: "/users/me",
 		data
 	});
 }
@@ -87,7 +87,7 @@ export function apiUserInfo(data = {}) {
 // 用户历史列表
 export function apiGetHistoryList(data = {}) {
 	return request({
-		url: "/userWallList",
+		url: "/users/wallpapers",
 		data
 	});
 }

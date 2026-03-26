@@ -1,4 +1,6 @@
 const Wallpaper = require('../models/Wallpaper');
+const User = require('../models/User');
+const Score = require('../models/Score');
 const { Sequelize } = require('sequelize');
 const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
@@ -15,6 +17,15 @@ function toLegacyWallpaper(record) {
     ...data,
     _id: data.id
   };
+}
+
+async function resolveUserId(userId) {
+  if (userId) {
+    return userId;
+  }
+
+  const firstUser = await User.findOne({ order: [['id', 'ASC']] });
+  return firstUser ? firstUser.id : null;
 }
 
 exports.getWallpapers = async (req, res) => {
@@ -66,9 +77,12 @@ exports.getWallpaperDetail = async (req, res) => {
   try {
     // 详情页 id 来自路由参数，例如 /detailWall/1。
     const { id } = req.params;
+    const { userId } = req.query;
+    const currentUserId = await resolveUserId(userId);
 
     // 单条详情也适合缓存，因为同一张壁纸可能被频繁打开。
-    const cacheKey = `wallpaper:${id}`;
+    // 这里额外带上 userId，是因为详情结果里包含当前用户自己的评分状态。
+    const cacheKey = `wallpaper:${id}:user:${currentUserId || 'guest'}`;
     const cached = await redis.get(cacheKey);
 
     if (cached) {
@@ -88,8 +102,25 @@ exports.getWallpaperDetail = async (req, res) => {
       await wallpaper.increment('view_count');
     });
 
+    let userScore = 0;
+    if (currentUserId) {
+      const scoreRecord = await Score.findOne({
+        where: {
+          user_id: currentUserId,
+          wallpaper_id: id
+        },
+        attributes: ['score']
+      });
+      userScore = scoreRecord ? Number(scoreRecord.score) : 0;
+    }
+
     // 先返回详情，再让缓存接住后续相同请求。
-    const payload = toLegacyWallpaper(wallpaper);
+    const payload = toLegacyWallpaper({
+      ...wallpaper.toJSON(),
+      userScore,
+      user_score: userScore,
+      view_count: (wallpaper.view_count || 0) + 1
+    });
     await redis.setex(cacheKey, 3600, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {

@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `scores` (
   `user_id` INT NOT NULL COMMENT '用户ID',
   `wallpaper_id` INT NOT NULL COMMENT '壁纸ID',
   `classid` INT NOT NULL COMMENT '分类ID',
-  `score` TINYINT NOT NULL COMMENT '评分 1-5',
+  `score` DECIMAL(2,1) NOT NULL COMMENT '评分 0-5，支持半星',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_user_wallpaper (`user_id`, `wallpaper_id`),
   INDEX idx_wallpaper (`wallpaper_id`),
@@ -140,8 +140,13 @@ INSERT INTO `categories` (`name`, `picurl`, `sort`, `select`) VALUES
 ('可爱萌宠', 'https://picsum.photos/id/1025/480/854', 1, 1),
 ('风景名胜', 'https://picsum.photos/id/1015/480/854', 2, 1),
 ('动漫二次元', 'https://picsum.photos/id/1005/480/854', 3, 1),
-('创意色彩', 'https://picsum.photos/id/1060/480/854', 4, 0),
-('游戏电竞', 'https://picsum.photos/id/1041/480/854', 5, 0);
+('创意色彩', 'https://picsum.photos/id/1060/480/854', 4, 1),
+('游戏电竞', 'https://picsum.photos/id/1041/480/854', 5, 1),
+('城市建筑', 'https://picsum.photos/id/1040/480/854', 6, 0),
+('极简插画', 'https://picsum.photos/id/1020/480/854', 7, 0),
+('汽车机车', 'https://picsum.photos/id/1071/480/854', 8, 0),
+('宇宙星空', 'https://picsum.photos/id/1063/480/854', 9, 0),
+('美食静物', 'https://picsum.photos/id/1080/480/854', 10, 0);
 
 -- 插入轮播图
 INSERT INTO `banners` (`picurl`, `url`, `sort`, `status`) VALUES
@@ -157,6 +162,35 @@ INSERT INTO `notices` (`title`, `content`, `author`, `select`, `status`) VALUES
 -- 插入测试用户
 INSERT INTO `users` (`openid`, `nickname`, `ip`, `address`) VALUES
 ('test_openid_001', '测试用户', '127.0.0.1', '本地测试');
+
+-- 插入壁纸测试数据
+INSERT INTO `wallpapers`
+(`classid`, `title`, `description`, `picurl`, `small_picurl`, `tabs`, `score`, `score_count`, `download_count`, `view_count`, `nickname`, `status`) VALUES
+(1, '奶油小猫午后', '一只蜷在阳光里的奶油小猫，适合作为治愈系手机壁纸。', 'https://picsum.photos/id/1025/1440/2560', 'https://picsum.photos/id/1025/480/854', JSON_ARRAY('萌宠','治愈','猫咪'), 4.2, 12, 129, 526, '咸虾米', 1),
+(1, '软萌小狗出游', '披着毛毯的小狗，氛围安静温暖。', 'https://picsum.photos/id/237/1440/2560', 'https://picsum.photos/id/237/480/854', JSON_ARRAY('萌宠','狗狗','温柔'), 4.5, 18, 166, 692, '咸虾米', 1),
+(2, '山湖清晨薄雾', '雪山、帐篷和湖面构成的清冷风景。', 'https://picsum.photos/id/1015/1440/2560', 'https://picsum.photos/id/1015/480/854', JSON_ARRAY('风景','雪山','自然'), 4.6, 23, 210, 850, '咸虾米', 1),
+(2, '海边落日晚霞', '蓝色海岸线配合金色晚霞，适合做锁屏。', 'https://picsum.photos/id/1011/1440/2560', 'https://picsum.photos/id/1011/480/854', JSON_ARRAY('风景','海边','晚霞'), 4.3, 16, 180, 721, '咸虾米', 1),
+(3, '元气少女幻想', '柔和色调的人像壁纸，适合二次元主题。', 'https://picsum.photos/id/1005/1440/2560', 'https://picsum.photos/id/1005/480/854', JSON_ARRAY('动漫','幻想','人物'), 4.4, 20, 199, 744, '咸虾米', 1),
+(3, '夜空城市幻想', '偏未来感的夜景壁纸，氛围感强。', 'https://picsum.photos/id/1039/1440/2560', 'https://picsum.photos/id/1039/480/854', JSON_ARRAY('动漫','夜景','未来'), 4.1, 14, 154, 690, '咸虾米', 1),
+(4, '撞色几何光影', '高饱和几何切面，适合桌面和锁屏。', 'https://picsum.photos/id/1060/1440/2560', 'https://picsum.photos/id/1060/480/854', JSON_ARRAY('创意','几何','撞色'), 4.0, 11, 143, 531, '咸虾米', 1),
+(4, '流体渐变艺术', '流体艺术和柔和渐变结合的创意壁纸。', 'https://picsum.photos/id/1056/1440/2560', 'https://picsum.photos/id/1056/480/854', JSON_ARRAY('创意','渐变','流体'), 4.7, 22, 240, 901, '咸虾米', 1),
+(5, '电竞霓虹赛场', '带有霓虹氛围和游戏空间感的壁纸。', 'https://picsum.photos/id/1041/1440/2560', 'https://picsum.photos/id/1041/480/854', JSON_ARRAY('电竞','霓虹','科技'), 4.5, 19, 268, 980, '咸虾米', 1),
+(5, '机甲战斗氛围', '机械感和金属质感较强的电竞主题图。', 'https://picsum.photos/id/1043/1440/2560', 'https://picsum.photos/id/1043/480/854', JSON_ARRAY('电竞','机甲','酷炫'), 4.3, 17, 205, 812, '咸虾米', 1),
+(6, '城市街角黄昏', '现代城市建筑在黄昏光线下的层次感。', 'https://picsum.photos/id/1040/1440/2560', 'https://picsum.photos/id/1040/480/854', JSON_ARRAY('城市','建筑','黄昏'), 4.2, 15, 173, 668, '咸虾米', 1),
+(6, '高楼玻璃反射', '商务大楼和玻璃反射构成的极简城市风。', 'https://picsum.photos/id/1031/1440/2560', 'https://picsum.photos/id/1031/480/854', JSON_ARRAY('城市','高楼','现代'), 4.1, 13, 149, 577, '咸虾米', 1),
+(7, '奶油系插画女孩', '色彩柔和的插画头像，适合年轻化界面。', 'https://picsum.photos/id/1020/1440/2560', 'https://picsum.photos/id/1020/480/854', JSON_ARRAY('插画','治愈','简约'), 4.6, 21, 221, 845, '咸虾米', 1),
+(7, '极简线条人物', '留白和线条感更强的极简插画壁纸。', 'https://picsum.photos/id/1021/1440/2560', 'https://picsum.photos/id/1021/480/854', JSON_ARRAY('插画','线条','简洁'), 4.4, 18, 187, 733, '咸虾米', 1),
+(8, '红色跑车街拍', '高对比度跑车照片，适合速度感主题。', 'https://picsum.photos/id/1071/1440/2560', 'https://picsum.photos/id/1071/480/854', JSON_ARRAY('汽车','跑车','速度'), 4.8, 27, 302, 1104, '咸虾米', 1),
+(8, '复古机车静态', '偏复古风格的机车细节特写。', 'https://picsum.photos/id/1072/1440/2560', 'https://picsum.photos/id/1072/480/854', JSON_ARRAY('机车','复古','金属'), 4.3, 16, 176, 689, '咸虾米', 1),
+(9, '银河深空微光', '蓝紫色星空层次明显，适合深色锁屏。', 'https://picsum.photos/id/1063/1440/2560', 'https://picsum.photos/id/1063/480/854', JSON_ARRAY('星空','宇宙','梦幻'), 4.9, 30, 340, 1222, '咸虾米', 1),
+(9, '月面静谧夜色', '偏冷色调的月面和夜空主题壁纸。', 'https://picsum.photos/id/903/1440/2560', 'https://picsum.photos/id/903/480/854', JSON_ARRAY('宇宙','月球','夜空'), 4.5, 19, 208, 801, '咸虾米', 1),
+(10, '咖啡器具质感', '暖色咖啡器具静物，适合作为生活感壁纸。', 'https://picsum.photos/id/1067/1440/2560', 'https://picsum.photos/id/1067/480/854', JSON_ARRAY('美食','咖啡','静物'), 4.2, 12, 141, 520, '咸虾米', 1),
+(10, '甜品桌面摆拍', '甜品与餐具的整洁摆拍，画面干净。', 'https://picsum.photos/id/1080/1440/2560', 'https://picsum.photos/id/1080/480/854', JSON_ARRAY('美食','甜品','生活'), 4.4, 18, 190, 708, '咸虾米', 1);
+
+UPDATE `categories` c
+SET `wallpaper_count` = (
+  SELECT COUNT(*) FROM `wallpapers` w WHERE w.classid = c.id
+);
 
 EOF
 
@@ -174,10 +208,11 @@ if [ $? -eq 0 ]; then
     mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW TABLES;"
     echo ""
     echo "测试数据:"
-    echo "  - 5 个分类"
+    echo "  - 10 个分类"
     echo "  - 3 个轮播图"
     echo "  - 2 条公告"
     echo "  - 1 个测试用户"
+    echo "  - 20 张测试壁纸"
     echo ""
 else
     echo "错误: 数据库初始化失败"

@@ -1,19 +1,19 @@
 # Apifox接口清单
 
-这份文档以当前项目的实际后端实现为准，适合作为 Apifox 手动录入说明和接口核对清单。
+这份文档以当前代码实现为准，主接口统一使用新路径；旧路径只作为兼容别名保留在后端，不再作为前端和文档主入口。
 
-如果你想直接导入 Apifox，优先使用：
+如果需要直接导入 Apifox，请使用：
 
-- [Apifox导入.json](C:/Users/hulian/Desktop/huliang/bizi/univue3/docs/reference/Apifox导入.json)
+- [Apifox导入.json](C:/Users/hulian/Desktop/huliang/bizi/uniappvue3/univue3/docs/reference/Apifox导入.json)
 
-当前可用环境：
+当前环境：
 
 - 线上：`http://8.135.46.112/api`
 - 本地：`http://localhost:3000/api`
 
-## 1. Apifox 环境变量建议
+## 1. Apifox 环境变量
 
-建议先在 Apifox 中配置：
+建议配置：
 
 ```text
 baseUrl = http://8.135.46.112/api
@@ -26,11 +26,6 @@ accessKey = key123456
 access-key: {{accessKey}}
 Content-Type: application/json
 ```
-
-说明：
-
-- 所有 `/api/*` 接口都需要 `access-key`
-- 当前后端也兼容通过查询参数 `accessKey` 传递，但不建议继续使用
 
 ## 2. 公共返回结构
 
@@ -64,25 +59,48 @@ Content-Type: application/json
 - `401`：`access-key` 无效
 - `404`：资源不存在
 
-## 3. 分类
+## 3. 当前统一规则
 
-### 3.1 获取分类列表
+当前前后端统一按这套规则使用：
+
+- 轮播图：`/banners`
+- 分类：`/categories`
+- 公告：`/notices`、`/notices/:id`
+- 壁纸：`/wallpapers`、`/wallpapers/:id`、`/wallpapers/random`、`/wallpapers/search`
+- 用户：`/users/me`、`/users/wallpapers`
+- 评分：`POST /wallpapers/score`
+- 下载：`POST /wallpapers/download`
+- 分页参数：`limit`、`skip`
+- 壁纸主键参数：`wallpaperId`
+- 评分字段：`score`
+- 实体主键读取：优先 `id`
+
+后端仍保留兼容：
+
+- `/_id`
+- `user_score`
+- `/banner`、`/homeBanner`
+- `/classify`
+- `/notice`、`/wallNewsList`、`/wallNewsDetail/:id`
+- `/wallList`、`/detailWall/:id`、`/randomWall`、`/searchWall`
+- `/userInfo`、`/userWallList`
+- `/setupScore`、`/downloadWall`
+- 旧参数 `wallId`、`userScore`
+
+## 4. 分类
+
+### 4.1 获取分类列表
 
 - 方法：`GET`
-- 路径：`/classify`
+- 路径：`/categories`
 
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `limit` | number | 否 | 推荐使用，默认 `8` |
-| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `limit` | number | 否 | 默认 `8` |
+| `skip` | number | 否 | 默认 `0` |
 | `select` | string | 否 | 传 `true` 时仅返回精选分类 |
-
-说明：
-
-- 当前后端统一使用 `limit + skip`
-- 返回中同时保留 `id` 和 `_id`
 
 返回 `data` 示例：
 
@@ -95,30 +113,18 @@ Content-Type: application/json
     "picurl": "https://picsum.photos/id/1025/480/854",
     "sort": 1,
     "select": 1,
-    "wallpaper_count": 2,
-    "created_at": "2026-03-18T11:47:38.000Z",
-    "updated_at": "2026-03-23T12:58:38.000Z",
-    "updateTime": "2026-03-23T12:58:38.000Z"
+    "wallpaper_count": 30,
+    "updateTime": "2026-03-26T05:58:13.000Z"
   }
 ]
 ```
 
-## 4. 轮播图
+## 5. 轮播图
 
-### 4.1 获取轮播图列表
-
-- 方法：`GET`
-- 路径：`/banner`
-
-### 4.2 获取首页轮播图
+### 5.1 获取轮播图列表
 
 - 方法：`GET`
-- 路径：`/homeBanner`
-
-说明：
-
-- `/homeBanner` 是前端历史兼容别名
-- 当前返回内容与 `/banner` 一致
+- 路径：`/banners`
 
 返回 `data` 示例：
 
@@ -135,12 +141,12 @@ Content-Type: application/json
 ]
 ```
 
-## 5. 公告
+## 6. 公告
 
-### 5.1 获取公告列表
+### 6.1 获取公告列表
 
 - 方法：`GET`
-- 路径：`/notice`
+- 路径：`/notices`
 
 查询参数：
 
@@ -148,37 +154,18 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `limit` | number | 否 | 默认 `10` |
 | `skip` | number | 否 | 默认 `0` |
+| `select` | string | 否 | 传 `true` 时仅返回置顶公告 |
 
-### 5.2 获取公告详情
+### 6.2 获取公告详情
 
 - 方法：`GET`
-- 路径：`/notice/:id`
+- 路径：`/notices/:id`
 
 路径参数：
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `id` | number | 是 | 公告 ID |
-
-### 5.3 获取公告列表（兼容旧前端）
-
-- 方法：`GET`
-- 路径：`/wallNewsList`
-
-说明：
-
-- 这是旧前端接口别名
-- 当前返回内容与 `/notice` 一致
-
-### 5.4 获取公告详情（兼容旧前端）
-
-- 方法：`GET`
-- 路径：`/wallNewsDetail/:id`
-
-说明：
-
-- 这是旧前端接口别名
-- 当前返回内容与 `/notice/:id` 一致
 
 返回 `data` 示例：
 
@@ -189,54 +176,41 @@ Content-Type: application/json
   "title": "欢迎使用壁纸小程序",
   "content": "<p>公告内容</p>",
   "view_count": 12,
-  "created_at": "2026-03-18T11:47:38.000Z",
-  "updated_at": "2026-03-18T11:47:38.000Z"
+  "publish_date": "2026-03-18T11:47:38.000Z"
 }
 ```
 
-## 6. 壁纸
+## 7. 壁纸
 
-### 6.1 获取分类壁纸列表
+### 7.1 获取壁纸列表
 
 - 方法：`GET`
-- 路径：`/wallList`
+- 路径：`/wallpapers`
 
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `classid` | number | 是 | 分类 ID |
-| `limit` | number | 否 | 推荐使用，默认 `10` |
-| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `limit` | number | 否 | 默认 `10` |
+| `skip` | number | 否 | 默认 `0` |
 
-说明：
-
-- 当前统一使用 `limit + skip`
-
-返回 `data` 示例：
-
-```json
-[
-  {
-    "id": 1,
-    "_id": 1,
-    "classid": 1,
-    "smallPicurl": "https://picsum.photos/id/1025/480/854",
-    "score": "4.8"
-  }
-]
-```
-
-### 6.2 获取壁纸详情
+### 7.2 获取壁纸详情
 
 - 方法：`GET`
-- 路径：`/detailWall/:id`
+- 路径：`/wallpapers/:id`
 
 路径参数：
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `id` | number | 是 | 壁纸 ID |
+
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `userId` | number | 否 | 不传时回退到首个用户 |
 
 返回 `data` 示例：
 
@@ -247,24 +221,20 @@ Content-Type: application/json
   "classid": 1,
   "smallPicurl": "https://picsum.photos/id/1025/480/854",
   "picurl": "https://picsum.photos/id/1025/1440/2560",
-  "score": "4.8",
+  "score": "4.5",
   "title": "奶油小猫午后",
   "description": "一张适合作为手机壁纸的演示图片。",
   "tabs": ["萌宠", "治愈", "猫咪"],
-  "score_count": 36,
-  "download_count": 128,
-  "view_count": 525,
   "nickname": "咸虾米",
-  "status": 1,
-  "created_at": "2026-03-23T12:48:58.000Z",
-  "updated_at": "2026-03-23T12:52:15.000Z"
+  "userScore": 4.5,
+  "user_score": 4.5
 }
 ```
 
-### 6.3 获取每日推荐
+### 7.3 获取随机壁纸
 
 - 方法：`GET`
-- 路径：`/randomWall`
+- 路径：`/wallpapers/random`
 
 查询参数：
 
@@ -272,44 +242,25 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `limit` | number | 否 | 默认 `9` |
 
-### 6.4 搜索壁纸
+### 7.4 搜索壁纸
 
 - 方法：`GET`
-- 路径：`/searchWall`
+- 路径：`/wallpapers/search`
 
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `keyword` | string | 是 | 搜索关键词 |
-| `limit` | number | 否 | 推荐使用，默认 `10` |
-| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `limit` | number | 否 | 默认 `10` |
+| `skip` | number | 否 | 默认 `0` |
 
-说明：
+## 8. 用户
 
-- 当前统一使用 `limit + skip`
-
-返回 `data` 示例：
-
-```json
-[
-  {
-    "id": 1,
-    "_id": 1,
-    "classid": 1,
-    "smallPicurl": "https://picsum.photos/id/1025/480/854",
-    "score": "4.8",
-    "title": "奶油小猫午后"
-  }
-]
-```
-
-## 7. 用户
-
-### 7.1 获取用户信息
+### 8.1 获取当前用户信息
 
 - 方法：`GET`
-- 路径：`/userInfo`
+- 路径：`/users/me`
 
 查询参数：
 
@@ -317,36 +268,10 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `userId` | number | 否 | 不传时回退到首个用户 |
 
-说明：
-
-- 当前前端未接入真实登录态
-- 所以未传 `userId` 时，后端会回退到首个用户并返回默认统计信息
-
-返回 `data` 示例：
-
-```json
-{
-  "id": 1,
-  "nickname": "测试用户",
-  "avatar": "",
-  "openid": "test_openid_001",
-  "IP": "127.0.0.1",
-  "address": {
-    "country": "本地测试",
-    "province": "本地测试",
-    "city": "本地测试"
-  },
-  "scoreSize": 0,
-  "downloadSize": 0,
-  "score_count": 0,
-  "download_count": 0
-}
-```
-
-### 7.2 壁纸评分
+### 8.2 提交壁纸评分
 
 - 方法：`POST`
-- 路径：`/setupScore`
+- 路径：`/wallpapers/score`
 
 推荐请求体：
 
@@ -358,29 +283,21 @@ Content-Type: application/json
 }
 ```
 
-兼容说明：
-
-- 当前标准字段是 `wallpaperId`
-- 当前标准评分字段是 `score`
-- 旧字段 `wallId` 和 `userScore` 仍兼容
-
-成功示例：
+返回 `data` 示例：
 
 ```json
 {
-  "errCode": 0,
-  "errMsg": "评分成功",
-  "data": {
-    "score": 4.5
-  },
-  "timeCost": 0
+  "userScore": 4.5,
+  "score": 4.6,
+  "scoreCount": 7,
+  "updated": true
 }
 ```
 
-### 7.3 记录下载
+### 8.3 记录下载
 
 - 方法：`POST`
-- 路径：`/downloadWall`
+- 路径：`/wallpapers/download`
 
 推荐请求体：
 
@@ -391,15 +308,10 @@ Content-Type: application/json
 }
 ```
 
-兼容说明：
-
-- 当前标准字段是 `wallpaperId`
-- 旧字段 `wallId` 仍兼容
-
-### 7.4 获取用户历史壁纸
+### 8.4 获取用户历史壁纸
 
 - 方法：`GET`
-- 路径：`/userWallList`
+- 路径：`/users/wallpapers`
 
 查询参数：
 
@@ -407,67 +319,31 @@ Content-Type: application/json
 | --- | --- | --- | --- |
 | `type` | string | 是 | `score` 或 `download` |
 | `userId` | number | 否 | 不传时回退到首个用户 |
-| `limit` | number | 否 | 推荐使用，默认 `10` |
-| `skip` | number | 否 | 推荐使用，默认 `0` |
+| `limit` | number | 否 | 默认 `10` |
+| `skip` | number | 否 | 默认 `0` |
 
-说明：
+## 9. 兼容别名对照
 
-- 当前统一使用 `limit + skip`
-- 未传 `userId` 时也会回退到首个用户
+| 当前主路径 | 旧兼容路径 |
+| --- | --- |
+| `/banners` | `/banner`、`/homeBanner` |
+| `/categories` | `/classify` |
+| `/notices` | `/notice`、`/wallNewsList` |
+| `/notices/:id` | `/notice/:id`、`/wallNewsDetail/:id` |
+| `/wallpapers` | `/wallList` |
+| `/wallpapers/:id` | `/detailWall/:id` |
+| `/wallpapers/random` | `/randomWall` |
+| `/wallpapers/search` | `/searchWall` |
+| `/users/me` | `/userInfo` |
+| `/users/wallpapers` | `/userWallList` |
+| `POST /wallpapers/score` | `POST /setupScore` |
+| `POST /wallpapers/download` | `POST /downloadWall` |
 
-返回 `data` 示例：
+## 10. 当前状态
 
-```json
-[
-  {
-    "id": 1,
-    "_id": 1,
-    "classid": 1,
-    "smallPicurl": "https://picsum.photos/id/1025/480/854",
-    "score": "4.8",
-    "title": "奶油小猫午后",
-    "user_score": 4.5
-  }
-]
-```
+截至 `2026-03-26`，这份文档和当前代码一致：
 
-## 8. 当前统一规则
-
-现在建议前后端统一按这套字段使用：
-
-- 壁纸主键参数：`wallpaperId`
-- 评分字段：`score`
-- 分页参数：`limit`、`skip`
-- 实体主键读取：优先 `id`
-
-当前后端仍保留兼容：
-
-- `wallId`
-- `userScore`
-- `_id`
-
-## 9. Apifox 录入建议
-
-建议在 Apifox 里按以下分组创建接口：
-
-- 分类
-- 轮播图
-- 公告
-- 壁纸
-- 用户
-
-建议公共设置：
-
-- 全局环境变量：`baseUrl`、`accessKey`
-- 全局请求头：`access-key: {{accessKey}}`
-- 默认前缀：`{{baseUrl}}`
-
-## 10. 当前线上状态备注
-
-截至 `2026-03-24`，这份文档已经和当前线上后端一致，包括：
-
-- `/homeBanner`、`/wallNewsList`、`/wallNewsDetail/:id` 已兼容
-- `userInfo` 未传 `userId` 不再报错
-- `setupScore`、`downloadWall` 已兼容旧参数
-- 返回里仍保留 `id` 和 `_id`
-- 前端 H5 已重新发行并部署到 `http://8.135.46.112`
+- 前端主调用已改成新路径
+- 后端仍保留旧路径兼容
+- 文档主路径已切到新接口命名
+- Apifox 导入文件已同步更新

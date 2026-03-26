@@ -122,4 +122,25 @@ onUnload(()=>{
 		}
 	}
 }
+
+@media screen and (min-width: 960px) {
+	.classlist{
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: 24px 24px 96px;
+
+		.content{
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+			gap: 16px;
+			padding: 0;
+
+			.item{
+				height: 320px;
+				border-radius: 14px;
+				overflow: hidden;
+				box-shadow: 0 12px 30px rgba(21,34,28,0.10);
+			}
+		}
+	}
+}
 </style>

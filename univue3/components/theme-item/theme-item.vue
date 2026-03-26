@@ -93,4 +93,32 @@ defineProps({
 		}
 	}
 }
+
+@media screen and (min-width: 960px) {
+	.themeItem{
+		.box{
+			height: 260px;
+			border-radius: 16px;
+			box-shadow: 0 14px 34px rgba(21,34,28,0.10);
+
+			.mask{
+				height: 64px;
+				font-size: 18px;
+			}
+
+			.tab{
+				font-size: 12px;
+				padding: 6px 12px;
+				transform: none;
+				border-radius: 0 0 14px 0;
+			}
+		}
+
+		.box.more{
+			.text{
+				font-size: 18px;
+			}
+		}
+	}
+}
 </style>

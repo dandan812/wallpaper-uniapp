@@ -11,7 +11,9 @@ function toLegacyNotice(record) {
 
   return {
     ...data,
-    _id: data.id
+    _id: data.id,
+    // 旧前端详情页读取 publish_date，这里统一映射到创建时间。
+    publish_date: data.created_at || data.createdAt || null
   };
 }
 
@@ -19,18 +21,28 @@ exports.getNotices = async (req, res) => {
   try {
     // limit / skip 都来自前端 query 参数。
     // 例如：/api/notice?limit=10&skip=0
-    const { limit = 10, skip = 0 } = req.query;
+    const { limit = 10, skip = 0, select } = req.query;
 
     // 公告列表要按分页参数区分缓存，否则不同页会读到同一份数据。
-    const cacheKey = `notices:list:${limit}:${skip}`;
+    const cacheKey = `notices:list:${select}:${limit}:${skip}`;
     const cached = await redis.get(cacheKey);
 
     if (cached) {
       return success(res, JSON.parse(cached), '查询成功');
     }
 
+    const where = {
+      status: 1
+    };
+
+    // 首页公告条有时只想取置顶公告，这里兼容 select=true 的筛选方式。
+    if (select === 'true') {
+      where.select = 1;
+    }
+
     // 公告默认按 id 倒序，让最新公告排在最前面。
     const notices = await Notice.findAll({
+      where,
       order: [['id', 'DESC']],
       limit: parseInt(limit, 10),
       offset: parseInt(skip, 10)
@@ -70,8 +82,16 @@ exports.getNoticeDetail = async (req, res) => {
       return error(res, '公告不存在', 404);
     }
 
+    // 阅读数不是强一致要求，异步自增即可。
+    setImmediate(async () => {
+      await notice.increment('view_count');
+    });
+
     // 返回前统一转一次结构，顺便补上 _id 字段。
-    const payload = toLegacyNotice(notice);
+    const payload = toLegacyNotice({
+      ...notice.toJSON(),
+      view_count: (notice.view_count || 0) + 1
+    });
     await redis.setex(cacheKey, 600, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {

@@ -12,7 +12,7 @@
 		</view>
 		
 		
-		<view v-if="!classList.length || noSearch">
+		<view v-if="!classList.length && !noSearch">
 			<view class="history"  v-if="historySearch.length">
 				<view class="topTitle">
 					<view class="text">最近搜索</view>
@@ -39,7 +39,10 @@
 		
 		
 		<view class="noSearch" v-if="noSearch">
-			<uv-empty mode="search" icon="http://cdn.uviewui.com/uview/empty/search.png"></uv-empty>
+			<view class="emptyState">
+				<view class="emptyText">没有找到“{{queryParams.keyword}}”相关壁纸</view>
+				<view class="emptyTip">换个关键词试试</view>
+			</view>
 		</view>
 		
 		
@@ -212,6 +215,30 @@ onUnload(()=>{
 				display: block;
 			}			
 		}		
+	}
+	.noSearch{
+		padding: 160rpx 30rpx 0;
+		display: flex;
+		justify-content: center;
+	}
+	.emptyState{
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.emptyText{
+		font-size: 30rpx;
+		color: #475569;
+		line-height: 1.6;
+		text-align: center;
+	}
+	.emptyTip{
+		padding-top: 10rpx;
+		font-size: 28rpx;
+		color: #A0AEC0;
+		line-height: 1.6;
+		text-align: center;
 	}
 }
 </style>

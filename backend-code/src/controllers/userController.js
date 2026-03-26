@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Score = require('../models/Score');
 const Download = require('../models/Download');
 const Wallpaper = require('../models/Wallpaper');
+const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
 const { Sequelize } = require('sequelize');
 
@@ -125,39 +126,64 @@ exports.setupScore = async (req, res) => {
       return error(res, '壁纸不存在', 404);
     }
 
-    // findOrCreate 的意思是：
-    // 如果当前用户还没给这张图打过分，就创建一条评分记录；
-    // 如果已经打过分，就不再重复创建。
-    const [, created] = await Score.findOrCreate({
-      where: { user_id: currentUserId, wallpaper_id: currentWallpaperId },
-      defaults: {
-        classid: wallpaper.classid,
-        score: scoreValue
+    // 允许同一用户重复评分：
+    // 第一次评分就创建记录，后续评分就覆盖原来的分数。
+    const existingScore = await Score.findOne({
+      where: {
+        user_id: currentUserId,
+        wallpaper_id: currentWallpaperId
       }
     });
 
-    if (!created) {
-      return error(res, '您已经评分过了', 400);
+    if (existingScore) {
+      await existingScore.update({
+        score: scoreValue
+      });
+    } else {
+      await Score.create({
+        user_id: currentUserId,
+        wallpaper_id: currentWallpaperId,
+        classid: wallpaper.classid,
+        score: scoreValue
+      });
     }
 
-    // 壁纸主表里还存着平均分和评分人数。
-    // 这里异步回写，避免前端等太久。
-    setImmediate(async () => {
-      const avgScore = await Score.findOne({
-        where: { wallpaper_id: currentWallpaperId },
-        attributes: [[Sequelize.fn('AVG', Sequelize.col('score')), 'avg_score']],
-        raw: true
-      });
-
-      const scoreCount = await Score.count({ where: { wallpaper_id: currentWallpaperId } });
-
-      await wallpaper.update({
-        score: parseFloat(avgScore.avg_score).toFixed(1),
-        score_count: scoreCount
-      });
+    // 重复评分时平均分会变化，所以这里直接在当前请求里算出最新结果返回前端。
+    const avgScore = await Score.findOne({
+      where: { wallpaper_id: currentWallpaperId },
+      attributes: [[Sequelize.fn('AVG', Sequelize.col('score')), 'avg_score']],
+      raw: true
     });
 
-    success(res, { score: scoreValue }, '评分成功');
+    const scoreCount = await Score.count({ where: { wallpaper_id: currentWallpaperId } });
+    const averageScore = Number(parseFloat(avgScore.avg_score || 0).toFixed(1));
+
+    await wallpaper.update({
+      score: averageScore,
+      score_count: scoreCount
+    });
+
+    // 评分会影响详情、随机推荐、分类列表和用户历史里的分数字段，
+    // 所以这里顺手把相关缓存失效，避免前端读到旧分数。
+    const cachePatterns = [
+      `wallpaper:${currentWallpaperId}:user:*`,
+      `wallpapers:${wallpaper.classid}:*`,
+      'random_wallpapers:*'
+    ];
+
+    for (const pattern of cachePatterns) {
+      const keys = await redis.keys(pattern);
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+    }
+
+    success(res, {
+      userScore: Number(scoreValue),
+      score: averageScore,
+      scoreCount,
+      updated: !!existingScore
+    }, existingScore ? '评分已更新' : '评分成功');
   } catch (err) {
     error(res, err.message);
   }

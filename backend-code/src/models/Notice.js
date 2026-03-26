@@ -16,6 +16,25 @@ const Notice = sequelize.define('Notice', {
   content: {
     // 公告正文通常是富文本或长文本。
     type: DataTypes.TEXT
+  },
+  author: {
+    // 发布人，详情页头部会直接展示。
+    type: DataTypes.STRING(100)
+  },
+  view_count: {
+    // 阅读量用于详情页展示。
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  select: {
+    // 置顶/精选标记，首页公告位和详情页都可能依赖。
+    type: DataTypes.TINYINT,
+    defaultValue: 0
+  },
+  status: {
+    // 预留状态位，默认 1 表示正常展示。
+    type: DataTypes.TINYINT,
+    defaultValue: 1
   }
 }, {
   tableName: 'notices',

@@ -106,19 +106,19 @@
 			<view class="scorePopup">
 				<view class="popHeader">
 					<view></view>
-					<view class="title">{{isScore?'评分过了~':'壁纸评分'}}</view>
+					<view class="title">壁纸评分</view>
 					<view class="close" @click="clickScoreClose">
 						<uni-icons type="closeempty" size="18" color="#999"></uni-icons>
 					</view>
 				</view>
 
 				<view class="content">
-					<uni-rate v-model="userScore" allowHalf :disabled="isScore" disabled-color="#FFCA3E" />
+					<uni-rate v-model="userScore" allowHalf disabled-color="#FFCA3E" />
 					<text class="text">{{userScore}}分</text>
 				</view>
 
 				<view class="footer">
-					<button @click="submitScore" :disabled="!userScore || isScore" type="default" size="mini"
+					<button @click="handleSubmitScore" :disabled="!userScore" type="default" size="mini"
 						plain>确认评分</button>
 				</view>
 			</view>
@@ -142,239 +142,263 @@
 		apiWriteDownload,
 		apiDetailWall
 	} from "@/api/apis.js"
+
 	const maskState = ref(true);
 	const infoPopup = ref(null);
 	const scorePopup = ref(null);
-	const userScore = ref(0)
+	const userScore = ref(0);
 	const classList = ref([]);
 	const currentId = ref(null);
-	const currentIndex = ref(0)
+	const currentIndex = ref(0);
 	const currentInfo = ref(null);
-	const isScore = ref(false);
 	const readImgs = ref([]);
 
-
 	const storgClassList = uni.getStorageSync("storgClassList") || [];
-	classList.value = storgClassList.map(item => {
+
+	// 统一补齐预览页需要的图片字段，避免首页缓存和详情接口字段不一致。
+	const normalizeWallpaper = (item) => {
+		if (!item) return item;
+		const picurl = item.picurl || (item.smallPicurl ? item.smallPicurl.replace("_small.webp", ".jpg") : "");
+		const normalizedUserScore = item.userScore ?? item.user_score ?? 0;
 		return {
 			...item,
-			picurl: item.smallPicurl.replace("_small.webp", ".jpg")
-		}
-	})
+			picurl,
+			userScore: normalizedUserScore
+		};
+	};
 
-
+	classList.value = storgClassList.map(normalizeWallpaper);
 
 	onLoad(async (e) => {
 		currentId.value = e.id;
-		if(e.type == 'share'){
-			let res = await apiDetailWall({id:currentId.value});
-			classList.value = res.data.map(item=>{
-				return {
-					...item,
-					picurl: item.smallPicurl.replace("_small.webp", ".jpg")
-				}
-			})
-		}
-		currentIndex.value = classList.value.findIndex(item => item.id == currentId.value)
-		currentInfo.value = classList.value[currentIndex.value]
-		readImgsFun();
-	})
 
+		// H5 刷新后本地缓存可能丢失，这里直接按 id 回源拉详情，保证页面可恢复。
+		if (e.type == 'share' || !classList.value.length) {
+			const res = await apiDetailWall({ id: currentId.value });
+			classList.value = [normalizeWallpaper(res.data)];
+		}
+
+		currentIndex.value = classList.value.findIndex(item => item.id == currentId.value);
+		if (currentIndex.value < 0 && classList.value.length) {
+			currentIndex.value = 0;
+		}
+
+		currentInfo.value = classList.value[currentIndex.value] || null;
+
+		if (currentInfo.value) {
+			readImgsFun();
+		}
+	});
 
 	const swiperChange = (e) => {
 		currentIndex.value = e.detail.current;
-		currentInfo.value = classList.value[currentIndex.value]
+		currentInfo.value = classList.value[currentIndex.value];
 		readImgsFun();
-		console.log(e);
-	}
+	};
 
-
-
-	console.log(classList.value);
-
-	//点击info弹窗
 	const clickInfo = () => {
 		infoPopup.value.open();
-	}
+	};
 
-	//点击关闭信息弹窗
 	const clickInfoClose = () => {
 		infoPopup.value.close();
-	}
+	};
 
-	//评分弹窗
 	const clickScore = () => {
-		if (currentInfo.value.userScore) {
-			isScore.value = true;
-			userScore.value = currentInfo.value.userScore;
-		}
+		const scoredValue = currentInfo.value?.userScore ?? currentInfo.value?.user_score ?? 0;
+		userScore.value = scoredValue || Number(currentInfo.value?.score) || 0;
 		scorePopup.value.open();
-	}
-	//关闭评分框
+	};
+
 	const clickScoreClose = () => {
 		scorePopup.value.close();
-		userScore.value = 0;
-		isScore.value = false;
-	}
+		userScore.value = currentInfo.value?.userScore ?? currentInfo.value?.user_score ?? 0;
+	};
 
-	//确认评分
-	const submitScore = async () => {
-		uni.showLoading({
-			title: "加载中..."
-		})
-		let { id: wallpaperId } = currentInfo.value;
-		let res = await apiGetSetupScore({
-			wallpaperId,
-			score: userScore.value
-		})
-		uni.hideLoading();
-		if (res.errCode === 0) {
-			uni.showToast({
-				title: "评分成功",
-				icon: "none"
-			})
-			classList.value[currentIndex.value].userScore = userScore.value;
-			uni.setStorageSync("storgClassList", classList.value);
-			clickScoreClose();
+	const syncCurrentWallpaperScore = (scoreValue, options = {}) => {
+		const normalizedScore = Number(scoreValue) || 0;
+		if (!currentInfo.value || !normalizedScore) return;
+		const {
+			averageScore = null,
+			scoreCount = null
+		} = options;
+
+		userScore.value = normalizedScore;
+		currentInfo.value.userScore = normalizedScore;
+		currentInfo.value.user_score = normalizedScore;
+
+		if (averageScore !== null) {
+			currentInfo.value.score = Number(averageScore);
 		}
-	}
 
+		if (scoreCount !== null) {
+			currentInfo.value.score_count = Number(scoreCount);
+		}
 
-	//遮罩层状态
-	const maskChange = () => {
-		maskState.value = !maskState.value
-	}
+		if (classList.value[currentIndex.value]) {
+			classList.value[currentIndex.value].userScore = normalizedScore;
+			classList.value[currentIndex.value].user_score = normalizedScore;
 
+			classList.value[currentIndex.value].score = currentInfo.value.score;
+			classList.value[currentIndex.value].score_count = currentInfo.value.score_count;
+		}
 
-	//返回上一页
-	const goBack = () => {
-		uni.navigateBack({
-			success: () => {
-				
-			},
-			fail: (err) => {
-				uni.reLaunch({
-					url:"/pages/index/index"
-				})
+		uni.setStorageSync("storgClassList", classList.value);
+	};
+
+	const handleSubmitScore = async () => {
+		try {
+			const { id: wallpaperId } = currentInfo.value;
+			const res = await apiGetSetupScore({
+				wallpaperId,
+				score: userScore.value
+			});
+
+			if (res.errCode === 0) {
+				syncCurrentWallpaperScore(userScore.value, {
+					averageScore: res.data?.score ?? currentInfo.value?.score,
+					scoreCount: res.data?.scoreCount ?? currentInfo.value?.score_count
+				});
+				uni.showToast({
+					title: res.errMsg || "评分成功",
+					icon: "none"
+				});
+				clickScoreClose();
 			}
-		})
-	}
+		} catch (err) {
+			console.log(err);
+			uni.showToast({
+				title: err?.errMsg || err?.message || "评分失败",
+				icon: "none"
+			});
+		}
+	};
 
+	const maskChange = () => {
+		maskState.value = !maskState.value;
+	};
 
-	//点击下载
+	const goBack = () => {
+		const pages = getCurrentPages();
+		if (!pages || pages.length <= 1) {
+			uni.reLaunch({
+				url: "/pages/index/index"
+			});
+			return;
+		}
+
+		uni.navigateBack({
+			fail: () => {
+				uni.reLaunch({
+					url: "/pages/index/index"
+				});
+			}
+		});
+	};
+
 	const clickDownload = async () => {
 
 		// #ifdef H5
 		uni.showModal({
-			content: "请长按保存壁纸",
+			content: "请在 App 中下载壁纸",
 			showCancel: false
-		})
+		});
 		// #endif
 
 		// #ifndef H5
 		try {
-
 			uni.showLoading({
 				title: "下载中...",
 				mask: true
-			})
-			let { id: wallpaperId } = currentInfo.value;
-			let res = await apiWriteDownload({
+			});
+
+			const { id: wallpaperId } = currentInfo.value;
+			const res = await apiWriteDownload({
 				wallpaperId
-			})
+			});
 			if (res.errCode != 0) throw res;
+
 			uni.getImageInfo({
 				src: currentInfo.value.picurl,
-				success: (res) => {
+				success: (imageRes) => {
 					uni.saveImageToPhotosAlbum({
-						filePath: res.path,
-						success: (res) => {
+						filePath: imageRes.path,
+						success: () => {
 							uni.showToast({
-								title: "保存成功，请到相册查看",
+								title: "保存相册成功，请到相册查看",
 								icon: "none"
-							})
+							});
 						},
 						fail: err => {
 							if (err.errMsg == 'saveImageToPhotosAlbum:fail cancel') {
 								uni.showToast({
-									title: '保存失败，请重新点击下载',
+									title: '已取消保存到相册',
 									icon: "none"
-								})
+								});
 								return;
 							}
+
 							uni.showModal({
 								title: "授权提示",
-								content: "需要授权保存相册",
+								content: "请开启保存到相册权限后重试",
 								success: res => {
 									if (res.confirm) {
 										uni.openSetting({
 											success: (setting) => {
-												console.log(
-													setting);
-												if (setting
-													.authSetting[
-														'scope.writePhotosAlbum'
-														]) {
+												if (setting.authSetting['scope.writePhotosAlbum']) {
 													uni.showToast({
-														title: "获取授权成功",
+														title: "获取权限成功",
 														icon: "none"
-													})
+													});
 												} else {
 													uni.showToast({
-														title: "获取权限失败",
+														title: "您未开启权限",
 														icon: "none"
-													})
+													});
 												}
 											}
-										})
+										});
 									}
 								}
-							})
+							});
 						},
 						complete: () => {
 							uni.hideLoading();
 						}
-					})
-
+					});
 				}
-			})
-
+			});
 		} catch (err) {
 			console.log(err);
 			uni.hideLoading();
+			uni.showToast({
+				title: err?.errMsg || err?.message || "下载失败",
+				icon: "none"
+			});
 		}
 		// #endif
-	}
+	};
 
+	onShareAppMessage(() => {
+		return {
+			title: "壁纸预览",
+			path: "/pages/preview/preview?id=" + currentId.value + "&type=share"
+		};
+	});
 
-
-
-//分享给好友
-onShareAppMessage((e)=>{
-	return {
-		title:"咸虾米壁纸",
-		path:"/pages/preview/preview?id="+currentId.value+"&type=share"
-	}
-})
-
-
-//分享朋友圈
-onShareTimeline(()=>{
-	return {
-		title:"咸虾米壁纸",
-		query:"id="+currentId.value+"&type=share"
-	}
-})
-
-
-
+	onShareTimeline(() => {
+		return {
+			title: "壁纸预览",
+			query: "id=" + currentId.value + "&type=share"
+		};
+	});
 
 	function readImgsFun() {
 		readImgs.value.push(
 			currentIndex.value <= 0 ? classList.value.length - 1 : currentIndex.value - 1,
 			currentIndex.value,
 			currentIndex.value >= classList.value.length - 1 ? 0 : currentIndex.value + 1
-		)
+		);
 		readImgs.value = [...new Set(readImgs.value)];
 	}
 </script>
@@ -592,5 +616,76 @@ onShareTimeline(()=>{
 			}
 		}
 
+	}
+
+	@media screen and (min-width: 960px) {
+		.preview {
+			background: #111;
+
+			swiper {
+				width: min(980px, calc(100vw - 220px));
+				margin: 0 auto;
+
+				image {
+					object-fit: contain;
+				}
+			}
+
+			.mask {
+				.goBack {
+					left: 24px;
+				}
+
+				.count {
+					top: 30px;
+					font-size: 14px;
+					padding: 8px 14px;
+				}
+
+				.time {
+					font-size: 72px;
+					top: auto;
+					bottom: 120px;
+					left: 32px;
+					right: auto;
+					margin: 0;
+				}
+
+				.date {
+					font-size: 18px;
+					top: auto;
+					bottom: 86px;
+					left: 34px;
+					right: auto;
+					margin: 0;
+				}
+
+				.footer {
+					bottom: 36px;
+					width: 420px;
+					height: 72px;
+					border-radius: 72px;
+
+					.box {
+						flex-direction: row;
+						gap: 8px;
+
+						.text {
+							font-size: 14px;
+						}
+					}
+				}
+			}
+
+			.infoPopup {
+				max-width: 760px;
+				margin: 0 auto;
+				border-radius: 20px 20px 0 0;
+			}
+
+			.scorePopup {
+				width: 360px;
+			}
+		}
 	}
 </style>

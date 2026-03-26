@@ -78,4 +78,34 @@ defineProps({
 		
 	}
 }
+
+@media screen and (min-width: 960px) {
+	.layout{
+		.navbar{
+			background:
+			linear-gradient(to bottom, rgba(255,255,255,0.92), rgba(255,255,255,0.72) 68%, rgba(255,255,255,0.3) 100%),
+			linear-gradient(to right,#beecd8 20%,#F4E2D8);
+			backdrop-filter: blur(16px);
+			border-bottom: 1px solid rgba(255,255,255,0.7);
+
+			.titleBar{
+				max-width: 1280px;
+				margin: 0 auto !important;
+				padding: 0 24px;
+				justify-content: space-between;
+
+				.search{
+					width: 280px;
+					height: 40px;
+					margin-left: 24px;
+					font-size: 16px;
+
+					.icon{
+						margin-left: 10px;
+					}
+				}
+			}
+		}
+	}
+}
 </style>
