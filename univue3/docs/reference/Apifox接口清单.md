@@ -1,6 +1,6 @@
 # Apifox接口清单
 
-这份文档以当前代码实现为准，主接口统一使用新路径；旧路径只作为兼容别名保留在后端，不再作为前端和文档主入口。
+这份文档以当前代码实现为准，只记录当前主路径。
 
 如果需要直接导入 Apifox，请使用：
 
@@ -75,17 +75,7 @@ Content-Type: application/json
 - 评分字段：`score`
 - 实体主键读取：优先 `id`
 
-后端仍保留兼容：
-
-- `/_id`
-- `user_score`
-- `/banner`、`/homeBanner`
-- `/classify`
-- `/notice`、`/wallNewsList`、`/wallNewsDetail/:id`
-- `/wallList`、`/detailWall/:id`、`/randomWall`、`/searchWall`
-- `/userInfo`、`/userWallList`
-- `/setupScore`、`/downloadWall`
-- 旧参数 `wallId`、`userScore`
+后端仍保留部分旧路径和旧参数兼容，但不再列入当前文档。
 
 ## 4. 分类
 
@@ -322,24 +312,7 @@ Content-Type: application/json
 | `limit` | number | 否 | 默认 `10` |
 | `skip` | number | 否 | 默认 `0` |
 
-## 9. 兼容别名对照
-
-| 当前主路径 | 旧兼容路径 |
-| --- | --- |
-| `/banners` | `/banner`、`/homeBanner` |
-| `/categories` | `/classify` |
-| `/notices` | `/notice`、`/wallNewsList` |
-| `/notices/:id` | `/notice/:id`、`/wallNewsDetail/:id` |
-| `/wallpapers` | `/wallList` |
-| `/wallpapers/:id` | `/detailWall/:id` |
-| `/wallpapers/random` | `/randomWall` |
-| `/wallpapers/search` | `/searchWall` |
-| `/users/me` | `/userInfo` |
-| `/users/wallpapers` | `/userWallList` |
-| `POST /wallpapers/score` | `POST /setupScore` |
-| `POST /wallpapers/download` | `POST /downloadWall` |
-
-## 10. 当前状态
+## 9. 当前状态
 
 截至 `2026-03-26`，这份文档和当前代码一致：
 

@@ -1,166 +1,141 @@
-﻿# API 娴嬭瘯
+# API 测试
 
-杩欎唤鏂囨。浠?`../uniappvue3/../uniappvue3/backend-code/src/routes/` 褰撳墠瀹為檯瀹炵幇涓哄噯锛岃€屼笉鏄互鍘嗗彶瑙勫垝鎴栧墠绔崰浣嶆帴鍙ｅ悕涓哄噯銆?
-## 1. 鍩虹鍙橀噺
+这份文档以当前代码实现为准，示例全部使用新主路径。
+
+## 基础变量
 
 ```bash
-export API_URL="http://localhost:3000"
+export API_URL="http://localhost:3000/api"
 export ACCESS_KEY="key123456"
 ```
 
-## 2. 鍋ュ悍妫€鏌?
+## 健康检查
+
 ```bash
-curl "$API_URL/"
+curl "http://localhost:3000/"
 ```
 
-棰勬湡鍝嶅簲锛?
+预期响应：
+
 ```json
-{"message":"澹佺焊 API 鏈嶅姟杩愯涓?}
+{"message":"壁纸 API 服务运行中"}
 ```
 
-## 3. 褰撳墠宸插疄鐜版帴鍙?
-| 鏂规硶 | 璺緞 | 璇存槑 |
+## 当前主接口
+
+| 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| GET | `/api/classify` | 鍒嗙被鍒楄〃 |
-| GET | `/api/banner` | 杞挱鍥惧垪琛?|
-| GET | `/api/homeBanner` | 杞挱鍥惧垪琛紙鍓嶇鍏煎璺敱锛?|
-| GET | `/api/wallList` | 鍒嗙被澹佺焊鍒楄〃 |
-| GET | `/api/detailWall/:id` | 澹佺焊璇︽儏 |
-| GET | `/api/randomWall` | 闅忔満澹佺焊 |
-| GET | `/api/searchWall` | 鎼滅储澹佺焊 |
-| GET | `/api/notice` | 鍏憡鍒楄〃 |
-| GET | `/api/notice/:id` | 鍏憡璇︽儏 |
-| GET | `/api/wallNewsList` | 鍏憡鍒楄〃锛堝墠绔吋瀹硅矾鐢憋級 |
-| GET | `/api/wallNewsDetail/:id` | 鍏憡璇︽儏锛堝墠绔吋瀹硅矾鐢憋級 |
-| GET | `/api/userInfo` | 鐢ㄦ埛淇℃伅 |
-| POST | `/api/setupScore` | 澹佺焊璇勫垎 |
-| POST | `/api/downloadWall` | 涓嬭浇璁板綍 |
-| GET | `/api/userWallList` | 鐢ㄦ埛鍘嗗彶 |
+| GET | `/api/categories` | 分类列表 |
+| GET | `/api/banners` | 轮播图列表 |
+| GET | `/api/notices` | 公告列表 |
+| GET | `/api/notices/:id` | 公告详情 |
+| GET | `/api/wallpapers` | 壁纸列表 |
+| GET | `/api/wallpapers/:id` | 壁纸详情 |
+| GET | `/api/wallpapers/random` | 随机壁纸 |
+| GET | `/api/wallpapers/search` | 搜索壁纸 |
+| GET | `/api/users/me` | 用户信息 |
+| POST | `/api/wallpapers/score` | 壁纸评分 |
+| POST | `/api/wallpapers/download` | 下载记录 |
+| GET | `/api/users/wallpapers` | 用户历史 |
 
-## 4. curl 绀轰緥
+## curl 示例
 
-### 鍒嗙被鍒楄〃
+### 分类列表
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/classify"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/categories?limit=8&skip=0"
 ```
 
-### 杞挱鍥惧垪琛?
-```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/banner"
-```
-
-### 杞挱鍥惧垪琛紙鍓嶇鍏煎璺敱锛?
-```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/homeBanner"
-```
-
-### 澹佺焊鍒楄〃
+### 轮播图列表
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/wallList?classid=1&limit=10&skip=0"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/banners"
 ```
 
-### 澹佺焊璇︽儏
+### 公告列表
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/detailWall/1"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/notices?limit=10&skip=0"
 ```
 
-### 闅忔満澹佺焊
+### 公告详情
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/randomWall?limit=9"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/notices/1"
 ```
 
-### 鎼滅储澹佺焊
+### 壁纸列表
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/searchWall?keyword=椋庢櫙&limit=10"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/wallpapers?classid=1&limit=10&skip=0"
 ```
 
-### 鍏憡鍒楄〃
+### 壁纸详情
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/notice"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/wallpapers/1"
 ```
 
-### 鍏憡璇︽儏
+### 随机壁纸
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/notice/1"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/wallpapers/random?limit=9"
 ```
 
-### 鍏憡鍒楄〃锛堝墠绔吋瀹硅矾鐢憋級
+### 搜索壁纸
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/wallNewsList"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/wallpapers/search?keyword=风景&limit=10&skip=0"
 ```
 
-### 鍏憡璇︽儏锛堝墠绔吋瀹硅矾鐢憋級
+### 用户信息
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/wallNewsDetail/1"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/users/me?userId=1"
 ```
 
-### 鐢ㄦ埛淇℃伅
-
-```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/userInfo?userId=1"
-```
-
-### 璇勫垎
+### 评分
 
 ```bash
 curl -X POST \
   -H "access-key: $ACCESS_KEY" \
   -H "Content-Type: application/json" \
   -d '{"userId":1,"wallpaperId":1,"score":4.5}' \
-  "$API_URL/api/setupScore"
+  "$API_URL/wallpapers/score"
 ```
 
-### 涓嬭浇璁板綍
+### 下载记录
 
 ```bash
 curl -X POST \
   -H "access-key: $ACCESS_KEY" \
   -H "Content-Type: application/json" \
   -d '{"userId":1,"wallpaperId":1}' \
-  "$API_URL/api/downloadWall"
+  "$API_URL/wallpapers/download"
 ```
 
-### 鐢ㄦ埛鍘嗗彶
+### 用户历史
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/userWallList?userId=1&type=score&limit=10"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/users/wallpapers?userId=1&type=score&limit=10&skip=0"
 ```
 
-## 5. 閴存潈涓庨敊璇祴璇?
-### 缂哄皯 access-key
+## 鉴权与错误测试
+
+### 缺少 access-key
 
 ```bash
-curl "$API_URL/api/classify"
+curl "$API_URL/categories"
 ```
 
-### 閿欒鐨?access-key
+### 错误的 access-key
 
 ```bash
-curl -H "access-key: wrong_key" "$API_URL/api/classify"
+curl -H "access-key: wrong_key" "$API_URL/categories"
 ```
 
-### 缂哄皯蹇呭～鍙傛暟
+### 缺少必填参数
 
 ```bash
-curl -H "access-key: $ACCESS_KEY" "$API_URL/api/wallList"
+curl -H "access-key: $ACCESS_KEY" "$API_URL/wallpapers"
 ```
-
-## 6. 褰撳墠鏈榻愮殑鎺ュ彛
-
-鍓嶇 `api/apis.js` 閲屼娇鐢ㄧ殑鍘嗗彶璺緞宸茬粡鍦ㄥ悗绔ˉ浜嗗吋瀹硅矾鐢憋細
-
-- `/homeBanner`
-- `/wallNewsList`
-- `/wallNewsDetail/:id`
-
-鐜板湪鍓嶇鑱旇皟鍙互鐩存帴缁х画浣跨敤杩欎簺璺緞锛涘悗绔唴閮ㄥ悓鏃朵繚鐣欎簡 `/banner` 鍜?`/notice` 杩欎竴缁勬洿绠€娲佺殑璺敱銆?
-

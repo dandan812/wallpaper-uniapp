@@ -1,1049 +1,1501 @@
 ﻿{
-    "openapi":  "3.0.3",
-    "info":  {
-                 "title":  "咸虾米壁纸 API",
-                 "description":  "根据当前后端实际实现整理，可直接导入 Apifox。已对齐 2026-03-25 的线上代码状态。分页参数统一为 limit 和 skip。",
-                 "version":  "1.2.0"
-             },
-    "servers":  [
-                    {
-                        "url":  "http://8.135.46.112/api",
-                        "description":  "线上环境"
-                    },
-                    {
-                        "url":  "http://localhost:3000/api",
-                        "description":  "本地环境"
-                    }
-                ],
-    "security":  [
-                     {
-                         "accessKeyAuth":  [
-
-                                           ]
-                     }
-                 ],
-    "components":  {
-                       "securitySchemes":  {
-                                               "accessKeyAuth":  {
-                                                                     "type":  "apiKey",
-                                                                     "in":  "header",
-                                                                     "name":  "access-key",
-                                                                     "description":  "接口访问密钥，例如 key123456"
-                                                                 }
-                                           },
-                       "schemas":  {
-                                       "ApiResponseBase":  {
-                                                               "type":  "object",
-                                                               "properties":  {
-                                                                                  "errCode":  {
-                                                                                                  "type":  "integer",
-                                                                                                  "example":  0
-                                                                                              },
-                                                                                  "errMsg":  {
-                                                                                                 "type":  "string",
-                                                                                                 "example":  "查询成功"
-                                                                                             },
-                                                                                  "timeCost":  {
-                                                                                                   "type":  "integer",
-                                                                                                   "example":  0
-                                                                                               },
-                                                                                  "total":  {
-                                                                                                "type":  "integer",
-                                                                                                "nullable":  true,
-                                                                                                "example":  3
-                                                                                            }
-                                                                              }
-                                                           },
-                                       "CategoryItem":  {
-                                                            "type":  "object",
-                                                            "properties":  {
-                                                                               "id":  {
-                                                                                          "type":  "integer",
-                                                                                          "example":  1
-                                                                                      },
-                                                                               "_id":  {
-                                                                                           "type":  "integer",
-                                                                                           "example":  1
-                                                                                       },
-                                                                               "name":  {
-                                                                                            "type":  "string",
-                                                                                            "example":  "可爱萌宠"
-                                                                                        },
-                                                                               "picurl":  {
-                                                                                              "type":  "string",
-                                                                                              "example":  "https://picsum.photos/id/1025/480/854"
-                                                                                          },
-                                                                               "sort":  {
-                                                                                            "type":  "integer",
-                                                                                            "example":  1
-                                                                                        },
-                                                                               "select":  {
-                                                                                              "type":  "integer",
-                                                                                              "example":  1
-                                                                                          },
-                                                                               "wallpaper_count":  {
-                                                                                                       "type":  "integer",
-                                                                                                       "example":  2
-                                                                                                   },
-                                                                               "created_at":  {
-                                                                                                  "type":  "string",
-                                                                                                  "format":  "date-time"
-                                                                                              },
-                                                                               "updated_at":  {
-                                                                                                  "type":  "string",
-                                                                                                  "format":  "date-time"
-                                                                                              },
-                                                                               "updateTime":  {
-                                                                                                  "type":  "string",
-                                                                                                  "format":  "date-time"
-                                                                                              }
-                                                                           }
-                                                        },
-                                       "BannerItem":  {
-                                                          "type":  "object",
-                                                          "properties":  {
-                                                                             "id":  {
-                                                                                        "type":  "integer",
-                                                                                        "example":  1
-                                                                                    },
-                                                                             "_id":  {
-                                                                                         "type":  "integer",
-                                                                                         "example":  1
-                                                                                     },
-                                                                             "picurl":  {
-                                                                                            "type":  "string",
-                                                                                            "example":  "https://picsum.photos/id/1015/960/540"
-                                                                                        },
-                                                                             "target":  {
-                                                                                            "type":  "string",
-                                                                                            "example":  "miniProgram"
-                                                                                        },
-                                                                             "url":  {
-                                                                                         "type":  "string",
-                                                                                         "example":  "/pages/classlist/classlist?id=1\u0026name=可爱萌宠"
-                                                                                     },
-                                                                             "appid":  {
-                                                                                           "type":  "string",
-                                                                                           "nullable":  true,
-                                                                                           "example":  "wx123456"
-                                                                                       }
-                                                                         }
-                                                      },
-                                       "NoticeItem":  {
-                                                          "type":  "object",
-                                                          "properties":  {
-                                                                             "id":  {
-                                                                                        "type":  "integer",
-                                                                                        "example":  1
-                                                                                    },
-                                                                             "_id":  {
-                                                                                         "type":  "integer",
-                                                                                         "example":  1
-                                                                                     },
-                                                                             "title":  {
-                                                                                           "type":  "string",
-                                                                                           "example":  "欢迎使用壁纸小程序"
-                                                                                       },
-                                                                             "content":  {
-                                                                                             "type":  "string",
-                                                                                             "example":  "\u003cp\u003e公告内容\u003c/p\u003e"
-                                                                                         },
-                                                                             "view_count":  {
-                                                                                                "type":  "integer",
-                                                                                                "example":  12
-                                                                                            },
-                                                                             "created_at":  {
-                                                                                                "type":  "string",
-                                                                                                "format":  "date-time"
-                                                                                            },
-                                                                             "updated_at":  {
-                                                                                                "type":  "string",
-                                                                                                "format":  "date-time"
-                                                                                            }
-                                                                         }
-                                                      },
-                                       "WallpaperSummary":  {
-                                                                "type":  "object",
-                                                                "properties":  {
-                                                                                   "id":  {
-                                                                                              "type":  "integer",
-                                                                                              "example":  1
-                                                                                          },
-                                                                                   "_id":  {
-                                                                                               "type":  "integer",
-                                                                                               "example":  1
-                                                                                           },
-                                                                                   "classid":  {
-                                                                                                   "type":  "integer",
-                                                                                                   "example":  1
-                                                                                               },
-                                                                                   "smallPicurl":  {
-                                                                                                       "type":  "string",
-                                                                                                       "example":  "https://picsum.photos/id/1025/480/854"
-                                                                                                   },
-                                                                                   "score":  {
-                                                                                                 "type":  "string",
-                                                                                                 "example":  "4.8"
-                                                                                             },
-                                                                                   "title":  {
-                                                                                                 "type":  "string",
-                                                                                                 "nullable":  true,
-                                                                                                 "example":  "奶油小猫午后"
-                                                                                             }
-                                                                               }
-                                                            },
-                                       "WallpaperDetail":  {
-                                                               "allOf":  [
-                                                                             {
-                                                                                 "$ref":  "#/components/schemas/WallpaperSummary"
-                                                                             },
-                                                                             {
-                                                                                 "type":  "object",
-                                                                                 "properties":  {
-                                                                                                    "picurl":  {
-                                                                                                                   "type":  "string",
-                                                                                                                   "example":  "https://picsum.photos/id/1025/1440/2560"
-                                                                                                               },
-                                                                                                    "description":  {
-                                                                                                                        "type":  "string",
-                                                                                                                        "example":  "一张适合作为手机壁纸的演示图片。"
-                                                                                                                    },
-                                                                                                    "tabs":  {
-                                                                                                                 "type":  "array",
-                                                                                                                 "items":  {
-                                                                                                                               "type":  "string"
-                                                                                                                           },
-                                                                                                                 "example":  [
-                                                                                                                                 "萌宠",
-                                                                                                                                 "治愈",
-                                                                                                                                 "猫咪"
-                                                                                                                             ]
-                                                                                                             },
-                                                                                                    "score_count":  {
-                                                                                                                        "type":  "integer",
-                                                                                                                        "example":  36
-                                                                                                                    },
-                                                                                                    "download_count":  {
-                                                                                                                           "type":  "integer",
-                                                                                                                           "example":  128
-                                                                                                                       },
-                                                                                                    "view_count":  {
-                                                                                                                       "type":  "integer",
-                                                                                                                       "example":  525
-                                                                                                                   },
-                                                                                                    "nickname":  {
-                                                                                                                     "type":  "string",
-                                                                                                                     "example":  "咸虾米"
-                                                                                                                 },
-                                                                                                    "status":  {
-                                                                                                                   "type":  "integer",
-                                                                                                                   "example":  1
-                                                                                                               },
-                                                                                                    "created_at":  {
-                                                                                                                       "type":  "string",
-                                                                                                                       "format":  "date-time"
-                                                                                                                   },
-                                                                                                    "updated_at":  {
-                                                                                                                       "type":  "string",
-                                                                                                                       "format":  "date-time"
-                                                                                                                   }
-                                                                                                }
-                                                                             }
-                                                                         ]
-                                                           },
-                                       "UserInfo":  {
-                                                        "type":  "object",
-                                                        "properties":  {
-                                                                           "id":  {
-                                                                                      "type":  "integer",
-                                                                                      "example":  1
-                                                                                  },
-                                                                           "nickname":  {
-                                                                                            "type":  "string",
-                                                                                            "example":  "测试用户"
-                                                                                        },
-                                                                           "avatar":  {
-                                                                                          "type":  "string",
-                                                                                          "example":  ""
-                                                                                      },
-                                                                           "openid":  {
-                                                                                          "type":  "string",
-                                                                                          "example":  "test_openid_001"
-                                                                                      },
-                                                                           "IP":  {
-                                                                                      "type":  "string",
-                                                                                      "example":  "127.0.0.1"
-                                                                                  },
-                                                                           "address":  {
-                                                                                           "type":  "object",
-                                                                                           "properties":  {
-                                                                                                              "country":  {
-                                                                                                                              "type":  "string",
-                                                                                                                              "example":  "本地测试"
-                                                                                                                          },
-                                                                                                              "province":  {
-                                                                                                                               "type":  "string",
-                                                                                                                               "example":  "本地测试"
-                                                                                                                           },
-                                                                                                              "city":  {
-                                                                                                                           "type":  "string",
-                                                                                                                           "example":  "本地测试"
-                                                                                                                       }
-                                                                                                          }
-                                                                                       },
-                                                                           "scoreSize":  {
-                                                                                             "type":  "integer",
-                                                                                             "example":  0
-                                                                                         },
-                                                                           "downloadSize":  {
-                                                                                                "type":  "integer",
-                                                                                                "example":  0
-                                                                                            },
-                                                                           "score_count":  {
-                                                                                               "type":  "integer",
-                                                                                               "example":  0
-                                                                                           },
-                                                                           "download_count":  {
-                                                                                                  "type":  "integer",
-                                                                                                  "example":  0
-                                                                                              }
-                                                                       }
-                                                    },
-                                       "ScoreRequest":  {
-                                                            "type":  "object",
-                                                            "required":  [
-                                                                             "userId",
-                                                                             "wallpaperId",
-                                                                             "score"
-                                                                         ],
-                                                            "properties":  {
-                                                                               "userId":  {
-                                                                                              "type":  "integer",
-                                                                                              "example":  1
-                                                                                          },
-                                                                               "wallpaperId":  {
-                                                                                                   "type":  "integer",
-                                                                                                   "example":  1
-                                                                                               },
-                                                                               "score":  {
-                                                                                             "type":  "number",
-                                                                                             "example":  4.5
-                                                                                         }
-                                                                           }
-                                                        },
-                                       "DownloadRequest":  {
-                                                               "type":  "object",
-                                                               "required":  [
-                                                                                "userId",
-                                                                                "wallpaperId"
-                                                                            ],
-                                                               "properties":  {
-                                                                                  "userId":  {
-                                                                                                 "type":  "integer",
-                                                                                                 "example":  1
-                                                                                             },
-                                                                                  "wallpaperId":  {
-                                                                                                      "type":  "integer",
-                                                                                                      "example":  1
-                                                                                                  }
-                                                                              }
-                                                           },
-                                       "ApiResponseCategoryList":  {
-                                                                       "allOf":  [
-                                                                                     {
-                                                                                         "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                     },
-                                                                                     {
-                                                                                         "type":  "object",
-                                                                                         "properties":  {
-                                                                                                            "data":  {
-                                                                                                                         "type":  "array",
-                                                                                                                         "items":  {
-                                                                                                                                       "$ref":  "#/components/schemas/CategoryItem"
-                                                                                                                                   }
-                                                                                                                     }
-                                                                                                        }
-                                                                                     }
-                                                                                 ]
-                                                                   },
-                                       "ApiResponseBannerList":  {
-                                                                     "allOf":  [
-                                                                                   {
-                                                                                       "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                   },
-                                                                                   {
-                                                                                       "type":  "object",
-                                                                                       "properties":  {
-                                                                                                          "data":  {
-                                                                                                                       "type":  "array",
-                                                                                                                       "items":  {
-                                                                                                                                     "$ref":  "#/components/schemas/BannerItem"
-                                                                                                                                 }
-                                                                                                                   }
-                                                                                                      }
-                                                                                   }
-                                                                               ]
-                                                                 },
-                                       "ApiResponseNoticeList":  {
-                                                                     "allOf":  [
-                                                                                   {
-                                                                                       "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                   },
-                                                                                   {
-                                                                                       "type":  "object",
-                                                                                       "properties":  {
-                                                                                                          "data":  {
-                                                                                                                       "type":  "array",
-                                                                                                                       "items":  {
-                                                                                                                                     "$ref":  "#/components/schemas/NoticeItem"
-                                                                                                                                 }
-                                                                                                                   }
-                                                                                                      }
-                                                                                   }
-                                                                               ]
-                                                                 },
-                                       "ApiResponseNoticeDetail":  {
-                                                                       "allOf":  [
-                                                                                     {
-                                                                                         "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                     },
-                                                                                     {
-                                                                                         "type":  "object",
-                                                                                         "properties":  {
-                                                                                                            "data":  {
-                                                                                                                         "$ref":  "#/components/schemas/NoticeItem"
-                                                                                                                     }
-                                                                                                        }
-                                                                                     }
-                                                                                 ]
-                                                                   },
-                                       "ApiResponseWallpaperList":  {
-                                                                        "allOf":  [
-                                                                                      {
-                                                                                          "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                      },
-                                                                                      {
-                                                                                          "type":  "object",
-                                                                                          "properties":  {
-                                                                                                             "data":  {
-                                                                                                                          "type":  "array",
-                                                                                                                          "items":  {
-                                                                                                                                        "$ref":  "#/components/schemas/WallpaperSummary"
-                                                                                                                                    }
-                                                                                                                      }
-                                                                                                         }
-                                                                                      }
-                                                                                  ]
-                                                                    },
-                                       "ApiResponseWallpaperDetail":  {
-                                                                          "allOf":  [
-                                                                                        {
-                                                                                            "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                        },
-                                                                                        {
-                                                                                            "type":  "object",
-                                                                                            "properties":  {
-                                                                                                               "data":  {
-                                                                                                                            "$ref":  "#/components/schemas/WallpaperDetail"
-                                                                                                                        }
-                                                                                                           }
-                                                                                        }
-                                                                                    ]
-                                                                      },
-                                       "ApiResponseUserInfo":  {
-                                                                   "allOf":  [
-                                                                                 {
-                                                                                     "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                                 },
-                                                                                 {
-                                                                                     "type":  "object",
-                                                                                     "properties":  {
-                                                                                                        "data":  {
-                                                                                                                     "$ref":  "#/components/schemas/UserInfo"
-                                                                                                                 }
-                                                                                                    }
-                                                                                 }
-                                                                             ]
-                                                               },
-                                       "ApiResponseScore":  {
-                                                                "allOf":  [
-                                                                              {
-                                                                                  "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                              },
-                                                                              {
-                                                                                  "type":  "object",
-                                                                                  "properties":  {
-                                                                                                     "data":  {
-                                                                                                                  "type":  "object",
-                                                                                                                  "properties":  {
-                                                                                                                                     "score":  {
-                                                                                                                                                   "type":  "number",
-                                                                                                                                                   "example":  4.5
-                                                                                                                                               }
-                                                                                                                                 }
-                                                                                                              }
-                                                                                                 }
-                                                                              }
-                                                                          ]
-                                                            },
-                                       "ApiResponseNull":  {
-                                                               "allOf":  [
-                                                                             {
-                                                                                 "$ref":  "#/components/schemas/ApiResponseBase"
-                                                                             },
-                                                                             {
-                                                                                 "type":  "object",
-                                                                                 "properties":  {
-                                                                                                    "data":  {
-                                                                                                                 "nullable":  true,
-                                                                                                                 "example":  null
-                                                                                                             }
-                                                                                                }
-                                                                             }
-                                                                         ]
-                                                           }
-                                   }
-                   },
-    "paths":  {
-                  "/classify":  {
-                                    "get":  {
-                                                "tags":  [
-                                                             "分类"
-                                                         ],
-                                                "summary":  "获取分类列表",
-                                                "parameters":  [
-                                                                   {
-                                                                       "name":  "limit",
-                                                                       "in":  "query",
-                                                                       "description":  "推荐使用，默认 8",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
-                                                                       "name":  "skip",
-                                                                       "in":  "query",
-                                                                       "description":  "推荐使用，默认 0",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
-                                                                       "name":  "select",
-                                                                       "in":  "query",
-                                                                       "description":  "传 true 时仅返回精选分类",
-                                                                       "schema":  {
-                                                                                      "type":  "string",
-                                                                                      "example":  "true"
-                                                                                  }
-                                                                   }
-                                                               ],
-                                                "responses":  {
-                                                                  "200":  {
-                                                                              "description":  "成功",
-                                                                              "content":  {
-                                                                                              "application/json":  {
-                                                                                                                       "schema":  {
-                                                                                                                                      "$ref":  "#/components/schemas/ApiResponseCategoryList"
-                                                                                                                                  }
-                                                                                                                   }
-                                                                                          }
-                                                                          }
-                                                              }
-                                            }
-                                },
-                  "/banner":  {
-                                  "get":  {
-                                              "tags":  [
-                                                           "轮播图"
-                                                       ],
-                                              "summary":  "获取轮播图列表",
-                                              "responses":  {
-                                                                "200":  {
-                                                                            "description":  "成功",
-                                                                            "content":  {
-                                                                                            "application/json":  {
-                                                                                                                     "schema":  {
-                                                                                                                                    "$ref":  "#/components/schemas/ApiResponseBannerList"
-                                                                                                                                }
-                                                                                                                 }
-                                                                                        }
-                                                                        }
-                                                            }
-                                          }
-                              },
-                  "/homeBanner":  {
-                                      "get":  {
-                                                  "tags":  [
-                                                               "轮播图"
-                                                           ],
-                                                  "summary":  "获取首页轮播图",
-                                                  "description":  "旧前端兼容别名，返回结果与 /banner 一致。",
-                                                  "responses":  {
-                                                                    "200":  {
-                                                                                "description":  "成功",
-                                                                                "content":  {
-                                                                                                "application/json":  {
-                                                                                                                         "schema":  {
-                                                                                                                                        "$ref":  "#/components/schemas/ApiResponseBannerList"
-                                                                                                                                    }
-                                                                                                                     }
-                                                                                            }
-                                                                            }
-                                                                }
-                                              }
-                                  },
-                  "/notice":  {
-                                  "get":  {
-                                              "tags":  [
-                                                           "公告"
-                                                       ],
-                                              "summary":  "获取公告列表",
-                                              "parameters":  [
-                                                                 {
-                                                                     "name":  "limit",
-                                                                     "in":  "query",
-                                                                     "schema":  {
-                                                                                    "type":  "integer"
-                                                                                }
-                                                                 },
-                                                                 {
-                                                                     "name":  "skip",
-                                                                     "in":  "query",
-                                                                     "schema":  {
-                                                                                    "type":  "integer"
-                                                                                }
-                                                                 }
-                                                             ],
-                                              "responses":  {
-                                                                "200":  {
-                                                                            "description":  "成功",
-                                                                            "content":  {
-                                                                                            "application/json":  {
-                                                                                                                     "schema":  {
-                                                                                                                                    "$ref":  "#/components/schemas/ApiResponseNoticeList"
-                                                                                                                                }
-                                                                                                                 }
-                                                                                        }
-                                                                        }
-                                                            }
-                                          }
-                              },
-                  "/notice/{id}":  {
-                                       "get":  {
-                                                   "tags":  [
-                                                                "公告"
-                                                            ],
-                                                   "summary":  "获取公告详情",
-                                                   "parameters":  [
-                                                                      {
-                                                                          "name":  "id",
-                                                                          "in":  "path",
-                                                                          "required":  true,
-                                                                          "schema":  {
-                                                                                         "type":  "integer"
-                                                                                     }
-                                                                      }
-                                                                  ],
-                                                   "responses":  {
-                                                                     "200":  {
-                                                                                 "description":  "成功",
-                                                                                 "content":  {
-                                                                                                 "application/json":  {
-                                                                                                                          "schema":  {
-                                                                                                                                         "$ref":  "#/components/schemas/ApiResponseNoticeDetail"
-                                                                                                                                     }
-                                                                                                                      }
-                                                                                             }
-                                                                             }
-                                                                 }
-                                               }
-                                   },
-                  "/wallNewsList":  {
-                                        "get":  {
-                                                    "tags":  [
-                                                                 "公告"
-                                                             ],
-                                                    "summary":  "获取公告列表（旧接口）",
-                                                    "description":  "兼容旧前端命名，返回结果与 /notice 一致。",
-                                                    "parameters":  [
-                                                                       {
-                                                                           "name":  "limit",
-                                                                           "in":  "query",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       },
-                                                                       {
-                                                                           "name":  "skip",
-                                                                           "in":  "query",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       }
-                                                                   ],
-                                                    "responses":  {
-                                                                      "200":  {
-                                                                                  "description":  "成功",
-                                                                                  "content":  {
-                                                                                                  "application/json":  {
-                                                                                                                           "schema":  {
-                                                                                                                                          "$ref":  "#/components/schemas/ApiResponseNoticeList"
-                                                                                                                                      }
-                                                                                                                       }
-                                                                                              }
-                                                                              }
-                                                                  }
-                                                }
-                                    },
-                  "/wallNewsDetail/{id}":  {
-                                               "get":  {
-                                                           "tags":  [
-                                                                        "公告"
-                                                                    ],
-                                                           "summary":  "获取公告详情（旧接口）",
-                                                           "description":  "兼容旧前端命名，返回结果与 /notice/{id} 一致。",
-                                                           "parameters":  [
-                                                                              {
-                                                                                  "name":  "id",
-                                                                                  "in":  "path",
-                                                                                  "required":  true,
-                                                                                  "schema":  {
-                                                                                                 "type":  "integer"
-                                                                                             }
-                                                                              }
-                                                                          ],
-                                                           "responses":  {
-                                                                             "200":  {
-                                                                                         "description":  "成功",
-                                                                                         "content":  {
-                                                                                                         "application/json":  {
-                                                                                                                                  "schema":  {
-                                                                                                                                                 "$ref":  "#/components/schemas/ApiResponseNoticeDetail"
-                                                                                                                                             }
-                                                                                                                              }
-                                                                                                     }
-                                                                                     }
-                                                                         }
-                                                       }
-                                           },
-                  "/wallList":  {
-                                    "get":  {
-                                                "tags":  [
-                                                             "壁纸"
-                                                         ],
-                                                "summary":  "获取分类壁纸列表",
-                                                "parameters":  [
-                                                                   {
-                                                                       "name":  "classid",
-                                                                       "in":  "query",
-                                                                       "required":  true,
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
-                                                                       "name":  "limit",
-                                                                       "in":  "query",
-                                                                       "description":  "推荐使用，默认 10",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   },
-                                                                   {
-                                                                       "name":  "skip",
-                                                                       "in":  "query",
-                                                                       "description":  "推荐使用，默认 0",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   }
-                                                               ],
-                                                "responses":  {
-                                                                  "200":  {
-                                                                              "description":  "成功",
-                                                                              "content":  {
-                                                                                              "application/json":  {
-                                                                                                                       "schema":  {
-                                                                                                                                      "$ref":  "#/components/schemas/ApiResponseWallpaperList"
-                                                                                                                                  }
-                                                                                                                   }
-                                                                                          }
-                                                                          }
-                                                              }
-                                            }
-                                },
-                  "/detailWall/{id}":  {
-                                           "get":  {
-                                                       "tags":  [
-                                                                    "壁纸"
-                                                                ],
-                                                       "summary":  "获取壁纸详情",
-                                                       "parameters":  [
-                                                                          {
-                                                                              "name":  "id",
-                                                                              "in":  "path",
-                                                                              "required":  true,
-                                                                              "schema":  {
-                                                                                             "type":  "integer"
-                                                                                         }
-                                                                          }
-                                                                      ],
-                                                       "responses":  {
-                                                                         "200":  {
-                                                                                     "description":  "成功",
-                                                                                     "content":  {
-                                                                                                     "application/json":  {
-                                                                                                                              "schema":  {
-                                                                                                                                             "$ref":  "#/components/schemas/ApiResponseWallpaperDetail"
-                                                                                                                                         }
-                                                                                                                          }
-                                                                                                 }
-                                                                                 }
-                                                                     }
-                                                   }
-                                       },
-                  "/randomWall":  {
-                                      "get":  {
-                                                  "tags":  [
-                                                               "壁纸"
-                                                           ],
-                                                  "summary":  "获取每日推荐",
-                                                  "parameters":  [
-                                                                     {
-                                                                         "name":  "limit",
-                                                                         "in":  "query",
-                                                                         "schema":  {
-                                                                                        "type":  "integer"
-                                                                                    }
-                                                                     }
-                                                                 ],
-                                                  "responses":  {
-                                                                    "200":  {
-                                                                                "description":  "成功",
-                                                                                "content":  {
-                                                                                                "application/json":  {
-                                                                                                                         "schema":  {
-                                                                                                                                        "$ref":  "#/components/schemas/ApiResponseWallpaperList"
-                                                                                                                                    }
-                                                                                                                     }
-                                                                                            }
-                                                                            }
-                                                                }
-                                              }
-                                  },
-                  "/searchWall":  {
-                                      "get":  {
-                                                  "tags":  [
-                                                               "壁纸"
-                                                           ],
-                                                  "summary":  "搜索壁纸",
-                                                  "parameters":  [
-                                                                     {
-                                                                         "name":  "keyword",
-                                                                         "in":  "query",
-                                                                         "required":  true,
-                                                                         "schema":  {
-                                                                                        "type":  "string"
-                                                                                    }
-                                                                     },
-                                                                     {
-                                                                         "name":  "limit",
-                                                                         "in":  "query",
-                                                                         "description":  "推荐使用，默认 10",
-                                                                         "schema":  {
-                                                                                        "type":  "integer"
-                                                                                    }
-                                                                     },
-                                                                     {
-                                                                         "name":  "skip",
-                                                                         "in":  "query",
-                                                                         "description":  "推荐使用，默认 0",
-                                                                         "schema":  {
-                                                                                        "type":  "integer"
-                                                                                    }
-                                                                     }
-                                                                 ],
-                                                  "responses":  {
-                                                                    "200":  {
-                                                                                "description":  "成功",
-                                                                                "content":  {
-                                                                                                "application/json":  {
-                                                                                                                         "schema":  {
-                                                                                                                                        "$ref":  "#/components/schemas/ApiResponseWallpaperList"
-                                                                                                                                    }
-                                                                                                                     }
-                                                                                            }
-                                                                            }
-                                                                }
-                                              }
-                                  },
-                  "/userInfo":  {
-                                    "get":  {
-                                                "tags":  [
-                                                             "用户"
-                                                         ],
-                                                "summary":  "获取用户信息",
-                                                "parameters":  [
-                                                                   {
-                                                                       "name":  "userId",
-                                                                       "in":  "query",
-                                                                       "description":  "不传时回退到首个用户",
-                                                                       "schema":  {
-                                                                                      "type":  "integer"
-                                                                                  }
-                                                                   }
-                                                               ],
-                                                "responses":  {
-                                                                  "200":  {
-                                                                              "description":  "成功",
-                                                                              "content":  {
-                                                                                              "application/json":  {
-                                                                                                                       "schema":  {
-                                                                                                                                      "$ref":  "#/components/schemas/ApiResponseUserInfo"
-                                                                                                                                  }
-                                                                                                                   }
-                                                                                          }
-                                                                          }
-                                                              }
-                                            }
-                                },
-                  "/setupScore":  {
-                                      "post":  {
-                                                   "tags":  [
-                                                                "用户"
-                                                            ],
-                                                   "summary":  "提交壁纸评分",
-                                                   "description":  "当前标准参数为 wallpaperId 和 score。后端仍兼容旧参数 wallId 和 userScore。",
-                                                   "requestBody":  {
-                                                                       "required":  true,
-                                                                       "content":  {
-                                                                                       "application/json":  {
-                                                                                                                "schema":  {
-                                                                                                                               "$ref":  "#/components/schemas/ScoreRequest"
-                                                                                                                           }
-                                                                                                            }
-                                                                                   }
-                                                                   },
-                                                   "responses":  {
-                                                                     "200":  {
-                                                                                 "description":  "成功",
-                                                                                 "content":  {
-                                                                                                 "application/json":  {
-                                                                                                                          "schema":  {
-                                                                                                                                         "$ref":  "#/components/schemas/ApiResponseScore"
-                                                                                                                                     }
-                                                                                                                      }
-                                                                                             }
-                                                                             }
-                                                                 }
-                                               }
-                                  },
-                  "/downloadWall":  {
-                                        "post":  {
-                                                     "tags":  [
-                                                                  "用户"
-                                                              ],
-                                                     "summary":  "记录下载",
-                                                     "description":  "当前标准参数为 wallpaperId。后端仍兼容旧参数 wallId。",
-                                                     "requestBody":  {
-                                                                         "required":  true,
-                                                                         "content":  {
-                                                                                         "application/json":  {
-                                                                                                                  "schema":  {
-                                                                                                                                 "$ref":  "#/components/schemas/DownloadRequest"
-                                                                                                                             }
-                                                                                                              }
-                                                                                     }
-                                                                     },
-                                                     "responses":  {
-                                                                       "200":  {
-                                                                                   "description":  "成功",
-                                                                                   "content":  {
-                                                                                                   "application/json":  {
-                                                                                                                            "schema":  {
-                                                                                                                                           "$ref":  "#/components/schemas/ApiResponseNull"
-                                                                                                                                       }
-                                                                                                                        }
-                                                                                               }
-                                                                               }
-                                                                   }
-                                                 }
-                                    },
-                  "/userWallList":  {
-                                        "get":  {
-                                                    "tags":  [
-                                                                 "用户"
-                                                             ],
-                                                    "summary":  "获取用户历史壁纸",
-                                                    "parameters":  [
-                                                                       {
-                                                                           "name":  "type",
-                                                                           "in":  "query",
-                                                                           "required":  true,
-                                                                           "schema":  {
-                                                                                          "type":  "string",
-                                                                                          "enum":  [
-                                                                                                       "score",
-                                                                                                       "download"
-                                                                                                   ]
-                                                                                      }
-                                                                       },
-                                                                       {
-                                                                           "name":  "userId",
-                                                                           "in":  "query",
-                                                                           "description":  "不传时回退到首个用户",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       },
-                                                                       {
-                                                                           "name":  "limit",
-                                                                           "in":  "query",
-                                                                           "description":  "推荐使用，默认 10",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       },
-                                                                       {
-                                                                           "name":  "skip",
-                                                                           "in":  "query",
-                                                                           "description":  "推荐使用，默认 0",
-                                                                           "schema":  {
-                                                                                          "type":  "integer"
-                                                                                      }
-                                                                       }
-                                                                   ],
-                                                    "responses":  {
-                                                                      "200":  {
-                                                                                  "description":  "成功",
-                                                                                  "content":  {
-                                                                                                  "application/json":  {
-                                                                                                                           "schema":  {
-                                                                                                                                          "$ref":  "#/components/schemas/ApiResponseWallpaperList"
-                                                                                                                                      }
-                                                                                                                       }
-                                                                                              }
-                                                                              }
-                                                                  }
-                                                }
-                                    }
+  "openapi": "3.0.3",
+  "info": {
+    "title": "咸虾米壁纸 API",
+    "description": "?????????????????? Apifox???? 2026-03-26 ?????????????????? REST ??????????????????",
+    "version": "1.3.0"
+  },
+  "servers": [
+    {
+      "url": "http://8.135.46.112/api",
+      "description": "线上环境"
+    },
+    {
+      "url": "http://localhost:3000/api",
+      "description": "本地环境"
+    }
+  ],
+  "security": [
+    {
+      "accessKeyAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "accessKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "access-key",
+        "description": "接口访问密钥，例如 key123456"
+      }
+    },
+    "schemas": {
+      "ApiResponseBase": {
+        "type": "object",
+        "properties": {
+          "errCode": {
+            "type": "integer",
+            "example": 0
+          },
+          "errMsg": {
+            "type": "string",
+            "example": "查询成功"
+          },
+          "timeCost": {
+            "type": "integer",
+            "example": 0
+          },
+          "total": {
+            "type": "integer",
+            "nullable": true,
+            "example": 3
+          }
+        }
+      },
+      "CategoryItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "可爱萌宠"
+          },
+          "picurl": {
+            "type": "string",
+            "example": "https://picsum.photos/id/1025/480/854"
+          },
+          "sort": {
+            "type": "integer",
+            "example": 1
+          },
+          "select": {
+            "type": "integer",
+            "example": 1
+          },
+          "wallpaper_count": {
+            "type": "integer",
+            "example": 2
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BannerItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "picurl": {
+            "type": "string",
+            "example": "https://picsum.photos/id/1015/960/540"
+          },
+          "target": {
+            "type": "string",
+            "example": "miniProgram"
+          },
+          "url": {
+            "type": "string",
+            "example": "/pages/classlist/classlist?id=1&name=可爱萌宠"
+          },
+          "appid": {
+            "type": "string",
+            "nullable": true,
+            "example": "wx123456"
+          }
+        }
+      },
+      "NoticeItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "欢迎使用壁纸小程序"
+          },
+          "content": {
+            "type": "string",
+            "example": "<p>公告内容</p>"
+          },
+          "view_count": {
+            "type": "integer",
+            "example": 12
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WallpaperSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "classid": {
+            "type": "integer",
+            "example": 1
+          },
+          "smallPicurl": {
+            "type": "string",
+            "example": "https://picsum.photos/id/1025/480/854"
+          },
+          "score": {
+            "type": "string",
+            "example": "4.8"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "example": "奶油小猫午后"
+          }
+        }
+      },
+      "WallpaperDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WallpaperSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "picurl": {
+                "type": "string",
+                "example": "https://picsum.photos/id/1025/1440/2560"
               },
-    "tags":  [
-                 {
-                     "name":  "分类"
-                 },
-                 {
-                     "name":  "轮播图"
-                 },
-                 {
-                     "name":  "公告"
-                 },
-                 {
-                     "name":  "壁纸"
-                 },
-                 {
-                     "name":  "用户"
-                 }
-             ]
+              "description": {
+                "type": "string",
+                "example": "一张适合作为手机壁纸的演示图片。"
+              },
+              "tabs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "萌宠",
+                  "治愈",
+                  "猫咪"
+                ]
+              },
+              "score_count": {
+                "type": "integer",
+                "example": 36
+              },
+              "download_count": {
+                "type": "integer",
+                "example": 128
+              },
+              "view_count": {
+                "type": "integer",
+                "example": 525
+              },
+              "nickname": {
+                "type": "string",
+                "example": "咸虾米"
+              },
+              "status": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "UserInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nickname": {
+            "type": "string",
+            "example": "测试用户"
+          },
+          "avatar": {
+            "type": "string",
+            "example": ""
+          },
+          "openid": {
+            "type": "string",
+            "example": "test_openid_001"
+          },
+          "IP": {
+            "type": "string",
+            "example": "127.0.0.1"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string",
+                "example": "本地测试"
+              },
+              "province": {
+                "type": "string",
+                "example": "本地测试"
+              },
+              "city": {
+                "type": "string",
+                "example": "本地测试"
+              }
+            }
+          },
+          "scoreSize": {
+            "type": "integer",
+            "example": 0
+          },
+          "downloadSize": {
+            "type": "integer",
+            "example": 0
+          },
+          "score_count": {
+            "type": "integer",
+            "example": 0
+          },
+          "download_count": {
+            "type": "integer",
+            "example": 0
+          }
+        }
+      },
+      "ScoreRequest": {
+        "type": "object",
+        "required": [
+          "userId",
+          "wallpaperId",
+          "score"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "example": 1
+          },
+          "wallpaperId": {
+            "type": "integer",
+            "example": 1
+          },
+          "score": {
+            "type": "number",
+            "example": 4.5
+          }
+        }
+      },
+      "DownloadRequest": {
+        "type": "object",
+        "required": [
+          "userId",
+          "wallpaperId"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "example": 1
+          },
+          "wallpaperId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "ApiResponseCategoryList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CategoryItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseBannerList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/BannerItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseNoticeList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NoticeItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseNoticeDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/NoticeItem"
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseWallpaperList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WallpaperSummary"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseWallpaperDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/WallpaperDetail"
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseUserInfo": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/UserInfo"
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseScore": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "score": {
+                    "type": "number",
+                    "example": 4.5
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ApiResponseNull": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "nullable": true,
+                "example": null
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/categories": {
+      "get": {
+        "tags": [
+          "分类"
+        ],
+        "summary": "获取分类列表",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 8",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "传 true 时仅返回精选分类",
+            "schema": {
+              "type": "string",
+              "example": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryList"
+                }
+              }
+            }
+          }
+        },
+        "description": "???????????????????"
+      }
+    },
+    "/classify": {
+      "get": {
+        "tags": [
+          "分类"
+        ],
+        "summary": "获取分类列表",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 8",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "传 true 时仅返回精选分类",
+            "schema": {
+              "type": "string",
+              "example": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /categories?"
+      }
+    },
+    "/banners": {
+      "get": {
+        "tags": [
+          "轮播图"
+        ],
+        "summary": "获取轮播图列表",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBannerList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????????"
+      }
+    },
+    "/banner": {
+      "get": {
+        "tags": [
+          "轮播图"
+        ],
+        "summary": "获取轮播图列表",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBannerList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /banners?"
+      }
+    },
+    "/homeBanner": {
+      "get": {
+        "tags": [
+          "轮播图"
+        ],
+        "summary": "获取首页轮播图",
+        "description": "????????????? /banners ???",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBannerList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notices": {
+      "get": {
+        "tags": [
+          "公告"
+        ],
+        "summary": "获取公告列表",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeList"
+                }
+              }
+            }
+          }
+        },
+        "description": "???????????????????"
+      }
+    },
+    "/notice": {
+      "get": {
+        "tags": [
+          "公告"
+        ],
+        "summary": "获取公告列表",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /notices?"
+      }
+    },
+    "/wallNewsList": {
+      "get": {
+        "tags": [
+          "公告"
+        ],
+        "summary": "获取公告列表（旧接口）",
+        "description": "????????????? /notices ???",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notices/{id}": {
+      "get": {
+        "tags": [
+          "公告"
+        ],
+        "summary": "获取公告详情",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "?????????????????????"
+      }
+    },
+    "/notice/{id}": {
+      "get": {
+        "tags": [
+          "公告"
+        ],
+        "summary": "获取公告详情",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /notices/{id}?"
+      }
+    },
+    "/wallNewsDetail/{id}": {
+      "get": {
+        "tags": [
+          "公告"
+        ],
+        "summary": "获取公告详情（旧接口）",
+        "description": "????????????? /notices/{id} ???",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallpapers": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "获取分类壁纸列表",
+        "parameters": [
+          {
+            "name": "classid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 10",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "?????????????????????"
+      }
+    },
+    "/wallList": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "获取分类壁纸列表",
+        "parameters": [
+          {
+            "name": "classid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 10",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /wallpapers?"
+      }
+    },
+    "/wallpapers/random": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "获取每日推荐",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "?????????????????????"
+      }
+    },
+    "/randomWall": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "获取每日推荐",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /wallpapers/random?"
+      }
+    },
+    "/wallpapers/search": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "搜索壁纸",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 10",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "?????????????????????"
+      }
+    },
+    "/searchWall": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "搜索壁纸",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 10",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /wallpapers/search?"
+      }
+    },
+    "/wallpapers/{id}": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "获取壁纸详情",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "?????????????????????"
+      }
+    },
+    "/detailWall/{id}": {
+      "get": {
+        "tags": [
+          "壁纸"
+        ],
+        "summary": "获取壁纸详情",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /wallpapers/{id}?"
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户信息",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "不传时回退到首个用户",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUserInfo"
+                }
+              }
+            }
+          }
+        },
+        "description": "???????????????????????"
+      }
+    },
+    "/userInfo": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户信息",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "不传时回退到首个用户",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUserInfo"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /users/me?"
+      }
+    },
+    "/wallpapers/score": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "提交壁纸评分",
+        "description": "??????? wallpaperId ? score????????? wallId ? userScore?",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseScore"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/setupScore": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "提交壁纸评分",
+        "description": "????????????????? POST /wallpapers/score?",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseScore"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallpapers/download": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "记录下载",
+        "description": "??????? wallpaperId????????? wallId?",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNull"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/downloadWall": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "记录下载",
+        "description": "????????????????? POST /wallpapers/download?",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseNull"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/wallpapers": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户历史壁纸",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "score",
+                "download"
+              ]
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "不传时回退到首个用户",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 10",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "?????????????????????"
+      }
+    },
+    "/userWallList": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户历史壁纸",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "score",
+                "download"
+              ]
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "不传时回退到首个用户",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "推荐使用，默认 10",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "推荐使用，默认 0",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
+                }
+              }
+            }
+          }
+        },
+        "description": "????????????????? /users/wallpapers?"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "分类"
+    },
+    {
+      "name": "轮播图"
+    },
+    {
+      "name": "公告"
+    },
+    {
+      "name": "壁纸"
+    },
+    {
+      "name": "用户"
+    }
+  ]
 }
