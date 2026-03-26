@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "咸虾米壁纸 API",
-    "description": "?????????????????? Apifox???? 2026-03-26 ?????????????????? REST ??????????????????",
-    "version": "1.3.0"
+    "description": "?????????????????? Apifox???? 2026-03-26 ??????????????????",
+    "version": "1.3.1"
   },
   "servers": [
     {
@@ -551,54 +551,6 @@
         "description": "???????????????????"
       }
     },
-    "/classify": {
-      "get": {
-        "tags": [
-          "分类"
-        ],
-        "summary": "获取分类列表",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "推荐使用，默认 8",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "description": "推荐使用，默认 0",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "select",
-            "in": "query",
-            "description": "传 true 时仅返回精选分类",
-            "schema": {
-              "type": "string",
-              "example": "true"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseCategoryList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /categories?"
-      }
-    },
     "/banners": {
       "get": {
         "tags": [
@@ -618,48 +570,6 @@
           }
         },
         "description": "????????????????????"
-      }
-    },
-    "/banner": {
-      "get": {
-        "tags": [
-          "轮播图"
-        ],
-        "summary": "获取轮播图列表",
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseBannerList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /banners?"
-      }
-    },
-    "/homeBanner": {
-      "get": {
-        "tags": [
-          "轮播图"
-        ],
-        "summary": "获取首页轮播图",
-        "description": "????????????? /banners ???",
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseBannerList"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/notices": {
@@ -699,80 +609,6 @@
         "description": "???????????????????"
       }
     },
-    "/notice": {
-      "get": {
-        "tags": [
-          "公告"
-        ],
-        "summary": "获取公告列表",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseNoticeList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /notices?"
-      }
-    },
-    "/wallNewsList": {
-      "get": {
-        "tags": [
-          "公告"
-        ],
-        "summary": "获取公告列表（旧接口）",
-        "description": "????????????? /notices ???",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseNoticeList"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/notices/{id}": {
       "get": {
         "tags": [
@@ -802,68 +638,6 @@
           }
         },
         "description": "?????????????????????"
-      }
-    },
-    "/notice/{id}": {
-      "get": {
-        "tags": [
-          "公告"
-        ],
-        "summary": "获取公告详情",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /notices/{id}?"
-      }
-    },
-    "/wallNewsDetail/{id}": {
-      "get": {
-        "tags": [
-          "公告"
-        ],
-        "summary": "获取公告详情（旧接口）",
-        "description": "????????????? /notices/{id} ???",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseNoticeDetail"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/wallpapers": {
@@ -913,53 +687,6 @@
         "description": "?????????????????????"
       }
     },
-    "/wallList": {
-      "get": {
-        "tags": [
-          "壁纸"
-        ],
-        "summary": "获取分类壁纸列表",
-        "parameters": [
-          {
-            "name": "classid",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "推荐使用，默认 10",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "description": "推荐使用，默认 0",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /wallpapers?"
-      }
-    },
     "/wallpapers/random": {
       "get": {
         "tags": [
@@ -988,36 +715,6 @@
           }
         },
         "description": "?????????????????????"
-      }
-    },
-    "/randomWall": {
-      "get": {
-        "tags": [
-          "壁纸"
-        ],
-        "summary": "获取每日推荐",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /wallpapers/random?"
       }
     },
     "/wallpapers/search": {
@@ -1067,53 +764,6 @@
         "description": "?????????????????????"
       }
     },
-    "/searchWall": {
-      "get": {
-        "tags": [
-          "壁纸"
-        ],
-        "summary": "搜索壁纸",
-        "parameters": [
-          {
-            "name": "keyword",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "推荐使用，默认 10",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "description": "推荐使用，默认 0",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /wallpapers/search?"
-      }
-    },
     "/wallpapers/{id}": {
       "get": {
         "tags": [
@@ -1143,37 +793,6 @@
           }
         },
         "description": "?????????????????????"
-      }
-    },
-    "/detailWall/{id}": {
-      "get": {
-        "tags": [
-          "壁纸"
-        ],
-        "summary": "获取壁纸详情",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseWallpaperDetail"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /wallpapers/{id}?"
       }
     },
     "/users/me": {
@@ -1207,37 +826,6 @@
         "description": "???????????????????????"
       }
     },
-    "/userInfo": {
-      "get": {
-        "tags": [
-          "用户"
-        ],
-        "summary": "获取用户信息",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "不传时回退到首个用户",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseUserInfo"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /users/me?"
-      }
-    },
     "/wallpapers/score": {
       "post": {
         "tags": [
@@ -1269,37 +857,6 @@
         }
       }
     },
-    "/setupScore": {
-      "post": {
-        "tags": [
-          "用户"
-        ],
-        "summary": "提交壁纸评分",
-        "description": "????????????????? POST /wallpapers/score?",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ScoreRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseScore"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/wallpapers/download": {
       "post": {
         "tags": [
@@ -1307,37 +864,6 @@
         ],
         "summary": "记录下载",
         "description": "??????? wallpaperId????????? wallId?",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DownloadRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseNull"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/downloadWall": {
-      "post": {
-        "tags": [
-          "用户"
-        ],
-        "summary": "记录下载",
-        "description": "????????????????? POST /wallpapers/download?",
         "requestBody": {
           "required": true,
           "content": {
@@ -1419,65 +945,6 @@
           }
         },
         "description": "?????????????????????"
-      }
-    },
-    "/userWallList": {
-      "get": {
-        "tags": [
-          "用户"
-        ],
-        "summary": "获取用户历史壁纸",
-        "parameters": [
-          {
-            "name": "type",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "score",
-                "download"
-              ]
-            }
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "不传时回退到首个用户",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "推荐使用，默认 10",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "description": "推荐使用，默认 0",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseWallpaperList"
-                }
-              }
-            }
-          }
-        },
-        "description": "????????????????? /users/wallpapers?"
       }
     }
   },
