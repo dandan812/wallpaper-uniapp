@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import {onLoad,onUnload,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 
 import {apiGetClassList,apiGetHistoryList} from "@/api/apis.js"
@@ -31,6 +31,7 @@ import {gotoHome} from "@/utils/common.js"
 //分类列表数据
 const classList = ref([]);
 const noData = ref(false)
+const loading = ref(false)
 
 //定义data参数
 const queryParams = {
@@ -54,31 +55,59 @@ onLoad((e)=>{
 })
 
 onReachBottom(()=>{
-	if(noData.value) return;
+	if(noData.value || loading.value) return;
 	queryParams.skip += queryParams.limit;
 	getClassList();
 })
 
+// H5 桌面端一屏能放下很多卡片，首屏内容不满一屏时不会触发 onReachBottom。
+// 这里在每次请求完成后补一次高度检查，不够一屏就自动继续拉下一页。
+const tryLoadMoreForDesktop = async ()=>{
+	if(noData.value || loading.value) return;
+	if(typeof window === "undefined" || typeof document === "undefined") return;
+
+	await nextTick();
+
+	const pageHeight = Math.max(
+		document.body?.scrollHeight || 0,
+		document.documentElement?.scrollHeight || 0
+	);
+	const viewportHeight = window.innerHeight || 0;
+
+	if(pageHeight <= viewportHeight + 20){
+		queryParams.skip += queryParams.limit;
+		await getClassList();
+	}
+}
+
 //获取分类列表网络数据
 const getClassList = async ()=>{
+	if(loading.value) return;
+	loading.value = true;
 	let res;
-	if(queryParams.classid) {
-		res = await apiGetClassList(queryParams);
-	} else if(queryParams.type) {
-		res = await apiGetHistoryList(queryParams);
+	try{
+		if(queryParams.classid) {
+			res = await apiGetClassList(queryParams);
+		} else if(queryParams.type) {
+			res = await apiGetHistoryList(queryParams);
+		}
+
+		if(!res || !Array.isArray(res.data)) {
+			noData.value = true;
+			classList.value = [];
+			if(!queryParams.classid && !queryParams.type) gotoHome();
+			return;
+		}
+		
+		classList.value = [...classList.value , ...res.data];
+		if(queryParams.limit > res.data.length) noData.value = true; 
+		uni.setStorageSync("storgClassList",classList.value);	
+		console.log(classList.value);	
+	} finally {
+		loading.value = false;
 	}
 
-	if(!res || !Array.isArray(res.data)) {
-		noData.value = true;
-		classList.value = [];
-		if(!queryParams.classid && !queryParams.type) gotoHome();
-		return;
-	}
-	
-	classList.value = [...classList.value , ...res.data];
-	if(queryParams.limit > res.data.length) noData.value = true; 
-	uni.setStorageSync("storgClassList",classList.value);	
-	console.log(classList.value);	
+	await tryLoadMoreForDesktop();
 }
 
 
