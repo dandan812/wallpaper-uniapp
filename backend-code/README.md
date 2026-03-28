@@ -16,6 +16,13 @@ npm run dev
 mysql -u wallpaper_user -p wallpaper < init-user-tables.sql
 ```
 
+数据库相关脚本统一放在 `sql/` 目录：
+
+- `sql/mysql_init_wallpaper.sql`：初始化数据库和业务账号
+- `sql/mysql_reset_wallpaper.sql`：重置数据库
+- `sql/mysql_change_root.sql`：修改 MySQL root 密码
+- `sql/wallpaper_remote_dump.sql`：数据库结构和示例数据导出
+
 ## 常用脚本
 
 ```bash
@@ -60,6 +67,7 @@ backend-code/
 │   ├── utils/
 │   └── app.js
 ├── scripts/
+├── sql/
 ├── .env.example
 ├── ecosystem.config.js
 ├── init-user-tables.sql
