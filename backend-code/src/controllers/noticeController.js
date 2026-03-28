@@ -2,17 +2,18 @@ const Notice = require('../models/Notice');
 const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
 
-// 公告列表和详情页曾经依赖 _id，所以这里统一补齐兼容字段。
-function toLegacyNotice(record) {
-  if (!record) return record;
+function parsePositiveInt(value, fallback) {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) || parsed < 0 ? fallback : parsed;
+}
 
-  // 查询结果如果是 Sequelize 模型实例，先转成普通对象再处理。
+// 公告详情页仍读取 publish_date，所以这里只保留这一层兼容映射。
+function toNoticePayload(record) {
   const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
 
   return {
     ...data,
-    _id: data.id,
-    // 旧前端详情页读取 publish_date，这里统一映射到创建时间。
+    // 旧前端详情页读取 publish_date，这里继续映射到创建时间。
     publish_date: data.created_at || data.createdAt || null
   };
 }
@@ -22,9 +23,11 @@ exports.getNotices = async (req, res) => {
     // limit / skip 都来自前端 query 参数。
     // 例如：/api/notice?limit=10&skip=0
     const { limit = 10, skip = 0, select } = req.query;
+    const currentLimit = parsePositiveInt(limit, 10);
+    const currentSkip = parsePositiveInt(skip, 0);
 
     // 公告列表要按分页参数区分缓存，否则不同页会读到同一份数据。
-    const cacheKey = `notices:list:${select}:${limit}:${skip}`;
+    const cacheKey = `notices:list:${select}:${currentLimit}:${currentSkip}`;
     const cached = await redis.get(cacheKey);
 
     if (cached) {
@@ -44,12 +47,12 @@ exports.getNotices = async (req, res) => {
     const notices = await Notice.findAll({
       where,
       order: [['id', 'DESC']],
-      limit: parseInt(limit, 10),
-      offset: parseInt(skip, 10)
+      limit: currentLimit,
+      offset: currentSkip
     });
 
     // 转成前端结构后写入缓存，再返回给调用方。
-    const payload = notices.map(toLegacyNotice);
+    const payload = notices.map(toNoticePayload);
     await redis.setex(cacheKey, 600, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {
@@ -87,8 +90,8 @@ exports.getNoticeDetail = async (req, res) => {
       await notice.increment('view_count');
     });
 
-    // 返回前统一转一次结构，顺便补上 _id 字段。
-    const payload = toLegacyNotice({
+    // 返回前统一转一次结构，并把最新浏览量一并回给前端。
+    const payload = toNoticePayload({
       ...notice.toJSON(),
       view_count: (notice.view_count || 0) + 1
     });

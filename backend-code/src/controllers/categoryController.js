@@ -2,20 +2,18 @@ const Category = require("../models/Category");
 const redis = require("../config/redis");
 const { success, error } = require("../utils/response");
 
-// 把 Sequelize 查询结果转换成前端更容易直接消费的结构。
-// 这里保留历史字段 _id / updateTime，目的是让旧页面在不改代码的情况下也能继续工作。
-function toLegacyCategory(record) {
-  if (!record) return record;
+function parsePositiveInt(value, fallback) {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) || parsed < 0 ? fallback : parsed;
+}
 
-  // Sequelize 查出来的是模型实例，toJSON() 之后才是普通对象。
-  // 如果外部已经传入普通对象，这里就直接复用。
+// 当前前端已经直接使用 id，不再补历史字段 _id。
+// 但分类卡片仍会读取 updateTime，所以这里保留这一层轻量映射。
+function toCategoryPayload(record) {
   const data = typeof record.toJSON === "function" ? record.toJSON() : record;
 
   return {
     ...data,
-    // 旧前端曾经把主键当成 _id 读取，所以这里继续补一份。
-    _id: data.id,
-    // 旧前端有些地方用 updateTime，不直接读 updated_at，所以这里统一兼容。
     updateTime: data.updated_at || data.updatedAt || null,
   };
 }
@@ -35,8 +33,8 @@ exports.getClassify = async (req, res) => {
 
     // 前端传过来的 query 参数本质上是字符串，
     // 所以后端这里先显式转成整数，后面给 Sequelize 使用。
-    const currentLimit = parseInt(limit, 10);
-    const currentSkip = parseInt(skip, 10);
+    const currentLimit = parsePositiveInt(limit, 8);
+    const currentSkip = parsePositiveInt(skip, 0);
 
     // Redis 缓存 key 里必须带上筛选条件和分页参数，
     // 否则“精选分类”和“普通分类列表”可能会读到同一份缓存。
@@ -85,7 +83,7 @@ exports.getClassify = async (req, res) => {
     });
 
     // 把数据库记录转换成前端需要的结构，并补齐兼容字段。
-    const payload = rows.map(toLegacyCategory);
+    const payload = rows.map(toCategoryPayload);
 
     // success(...) 会生成统一的返回格式：
     // { errCode, errMsg, data, timeCost, total }

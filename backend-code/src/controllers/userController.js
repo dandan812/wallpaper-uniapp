@@ -6,17 +6,17 @@ const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
 const { Sequelize } = require('sequelize');
 
-// 用户历史相关接口还会返回壁纸数据，
-// 所以这里统一把壁纸记录转成兼容旧前端的结构。
-function toLegacyWallpaper(record) {
-  if (!record) return record;
+function parsePositiveInt(value, fallback) {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) || parsed < 0 ? fallback : parsed;
+}
 
-  // Sequelize 模型实例先转普通对象，再补 _id。
+// 用户历史列表里的壁纸字段已经和主列表统一成 id，不再补 _id。
+function toWallpaperPayload(record) {
+  if (!record) return null;
+
   const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
-  return {
-    ...data,
-    _id: data.id
-  };
+  return { ...data };
 }
 
 function parseAddress(address) {
@@ -239,8 +239,8 @@ exports.getUserWallList = async (req, res) => {
       skip = 0
     } = req.query;
     const currentUserId = await resolveUserId(userId);
-    const currentLimit = parseInt(limit, 10);
-    const currentSkip = parseInt(skip, 10);
+    const currentLimit = parsePositiveInt(limit, 10);
+    const currentSkip = parsePositiveInt(skip, 0);
 
     if (!currentUserId || !type) {
       return error(res, '参数不完整', 400);
@@ -263,10 +263,12 @@ exports.getUserWallList = async (req, res) => {
         offset: currentSkip,
         order: [['created_at', 'DESC']]
       });
-      wallpapers = scores.map(item => ({
-        ...toLegacyWallpaper(item.Wallpaper),
-        user_score: item.score
-      }));
+      wallpapers = scores
+        .filter(item => item.Wallpaper)
+        .map(item => ({
+          ...toWallpaperPayload(item.Wallpaper),
+          user_score: item.score
+        }));
     } else if (type === 'download') {
       // 下载历史只需要返回壁纸本身，不需要额外评分字段。
       const downloads = await Download.findAll({
@@ -279,7 +281,9 @@ exports.getUserWallList = async (req, res) => {
         offset: currentSkip,
         order: [['created_at', 'DESC']]
       });
-      wallpapers = downloads.map(item => toLegacyWallpaper(item.Wallpaper));
+      wallpapers = downloads
+        .filter(item => item.Wallpaper)
+        .map(item => toWallpaperPayload(item.Wallpaper));
     } else {
       // type 只允许 score / download 两种。
       return error(res, '无效的类型参数', 400);

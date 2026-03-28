@@ -5,18 +5,16 @@ const { Sequelize } = require('sequelize');
 const redis = require('../config/redis');
 const { success, error } = require('../utils/response');
 
-// 壁纸列表、详情、搜索结果都共用这一步结构转换。
-// 保留 _id 是为了兼容旧页面仍然按 _id 读取主键。
-function toLegacyWallpaper(record) {
-  if (!record) return record;
+function parsePositiveInt(value, fallback) {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) || parsed < 0 ? fallback : parsed;
+}
 
-  // Sequelize 模型实例先转普通对象，再补前端历史字段。
+// 当前前端已经统一读取 id，这里直接返回普通对象。
+function toWallpaperPayload(record) {
   const data = typeof record.toJSON === 'function' ? record.toJSON() : record;
 
-  return {
-    ...data,
-    _id: data.id
-  };
+  return { ...data };
 }
 
 async function resolveUserId(userId) {
@@ -39,8 +37,8 @@ exports.getWallpapers = async (req, res) => {
     } = req.query;
 
     // query 参数默认是字符串，这里统一转成整数后再传给 Sequelize。
-    const currentLimit = parseInt(limit, 10);
-    const currentSkip = parseInt(skip, 10);
+    const currentLimit = parsePositiveInt(limit, 10);
+    const currentSkip = parsePositiveInt(skip, 0);
 
     if (!classid) {
       return error(res, '缺少分类ID', 400);
@@ -64,8 +62,8 @@ exports.getWallpapers = async (req, res) => {
       attributes: ['id', 'classid', 'smallPicurl', 'score']
     });
 
-    // 统一转换结构，补齐 _id，再缓存结果。
-    const payload = wallpapers.map(toLegacyWallpaper);
+    // 统一转换结构后缓存，避免直接把模型实例塞进 Redis。
+    const payload = wallpapers.map(toWallpaperPayload);
     await redis.setex(cacheKey, 1800, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {
@@ -115,7 +113,7 @@ exports.getWallpaperDetail = async (req, res) => {
     }
 
     // 先返回详情，再让缓存接住后续相同请求。
-    const payload = toLegacyWallpaper({
+    const payload = toWallpaperPayload({
       ...wallpaper.toJSON(),
       userScore,
       user_score: userScore,
@@ -132,10 +130,11 @@ exports.getRandomWallpapers = async (req, res) => {
   try {
     // limit 控制首页“每日推荐”想拿多少张图。
     const { limit = 9 } = req.query;
+    const currentLimit = parsePositiveInt(limit, 9);
 
     // 随机推荐缓存时间故意设得短一些，
     // 这样首页不会长时间看到完全相同的一组图片。
-    const cacheKey = `random_wallpapers:${limit}`;
+    const cacheKey = `random_wallpapers:${currentLimit}`;
     const cached = await redis.get(cacheKey);
 
     if (cached) {
@@ -145,11 +144,11 @@ exports.getRandomWallpapers = async (req, res) => {
     // RAND() 让数据库随机返回一组壁纸。
     const wallpapers = await Wallpaper.findAll({
       order: Sequelize.literal('RAND()'),
-      limit: parseInt(limit, 10),
+      limit: currentLimit,
       attributes: ['id', 'classid', 'smallPicurl', 'score']
     });
 
-    const payload = wallpapers.map(toLegacyWallpaper);
+    const payload = wallpapers.map(toWallpaperPayload);
     await redis.setex(cacheKey, 300, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {
@@ -167,8 +166,8 @@ exports.searchWallpapers = async (req, res) => {
     } = req.query;
 
     // 搜索分页和分类列表统一成同一套 limit / skip 规则。
-    const currentLimit = parseInt(limit, 10);
-    const currentSkip = parseInt(skip, 10);
+    const currentLimit = parsePositiveInt(limit, 10);
+    const currentSkip = parsePositiveInt(skip, 0);
 
     if (!keyword) {
       return error(res, '缺少搜索关键词', 400);
@@ -198,7 +197,7 @@ exports.searchWallpapers = async (req, res) => {
       attributes: ['id', 'classid', 'smallPicurl', 'score', 'title']
     });
 
-    const payload = wallpapers.map(toLegacyWallpaper);
+    const payload = wallpapers.map(toWallpaperPayload);
     await redis.setex(cacheKey, 600, JSON.stringify(payload));
     success(res, payload, '查询成功');
   } catch (err) {
