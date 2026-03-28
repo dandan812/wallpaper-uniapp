@@ -24,7 +24,28 @@ npm run dev
 
 # 生产环境
 pm2 start ecosystem.config.js
+
+# 服务器更新代码并保留本机 .env
+./deploy.sh
 ```
+
+## 生产部署说明
+
+生产环境的 `.env` 只保留在服务器本机：
+
+- 服务器路径：`/var/www/wallpaper-api/.env`
+- 不要再用本地开发 `.env` 直接覆盖服务器生产 `.env`
+- 日常更新代码时，进入服务器目录后执行 `./deploy.sh`
+
+`deploy.sh` 当前会自动执行这些动作：
+
+1. 先备份服务器现有 `.env`
+2. `git pull` 拉取最新代码
+3. 恢复服务器本机 `.env`
+4. 安装生产依赖
+5. `pm2 startOrRestart ecosystem.config.js`
+
+这样做的目的是避免开发环境里的数据库、Redis、鉴权配置误覆盖线上配置。
 
 ## 目录结构
 
