@@ -65,7 +65,7 @@ const memoryRedis = {
 function warnMemoryFallback(err) {
   if (warnedMemoryFallback) return;
   warnedMemoryFallback = true;
-  console.warn('Redis 不可用，开发环境自动切换为内存缓存。');
+  console.warn('Redis 不可用，自动切换为内存缓存。');
   if (err) {
     console.warn('Redis fallback reason:', err.message || err);
   }
@@ -99,20 +99,18 @@ function createRedisClient() {
 
   client.on('error', (err) => {
     redisAvailable = false;
-    if (isDevelopment) {
-      warnMemoryFallback(err);
-      return;
+    warnMemoryFallback(err);
+    if (!isDevelopment) {
+      console.error('Redis 连接错误:', err);
     }
-    console.error('Redis 连接错误:', err);
   });
 
   client.connect().catch((err) => {
     redisAvailable = false;
-    if (isDevelopment) {
-      warnMemoryFallback(err);
-      return;
+    warnMemoryFallback(err);
+    if (!isDevelopment) {
+      console.error('Redis 初始连接失败:', err);
     }
-    console.error('Redis 初始连接失败:', err);
   });
 
   return client;
@@ -126,17 +124,12 @@ async function runRedis(method, ...args) {
       return await redisClient[method](...args);
     } catch (err) {
       redisAvailable = false;
-      if (!isDevelopment) {
-        throw err;
-      }
       warnMemoryFallback(err);
     }
   }
 
-  if (!isDevelopment) {
-    throw new Error('Redis unavailable');
-  }
-
+  // Redis 挂掉时继续走进程内缓存，
+  // 避免首页接口因为缓存层故障直接整体返回 400。
   return memoryRedis[method](...args);
 }
 
